@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <script src="https://code.jquery.com/jquery-2.2.4.js" integrity="sha256-iT6Q9iMJYuQiMWNd9lDyBUStIq/8PuOW33aOqmvFpqI=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.jquery.js" integrity="sha512-eSeh0V+8U3qoxFnK3KgBsM69hrMOGMBy3CNxq/T4BArsSQJfKVsKb5joMqIPrNMjRQSTl4xG8oJRpgU2o9I7HQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.min.css" integrity="sha512-yVvxUQV0QESBt1SyZbNJMAwyKvFTLMyXSyBHDO4BG5t7k/Lw34tyqlSDlKIrIENIzCl+RVUNjmCPG+V/GMesRw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            max-width: 1500px;
+            margin: 0 auto;
+            overflow-x: auto;
+        }
+        h2 {
+            color: #333;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            table-layout: auto;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+            word-wrap: break-word;
+        }
+        th {
+            background-color: #007bff;
+            color: white;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-right: 5px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        input[type="number"], input[type="date"], select {
+            width: 100%;
+            padding: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        input[type="file"], input[type="text"], input[type="email"] {
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .form-container {
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .form-group input, .form-group select {
+            width: calc(100% - 10px);
+            padding: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .form-group button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            border-radius: 4px;
+        }
+        .form-group button:hover {
+            background-color: #0056b3;
+        }
+        .delete-button {
+            background-color: #dc3545;
+        }
+        .delete-button:hover {
+            background-color: #c82333;
+        }
+        .product-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+        .product-group select,
+        .product-group input {
+            flex: 1;
+        }
+        .product-group button {
+            flex-shrink: 0;
+            background-color: #dc3545;
+            color: white;
+        }
+        .product-group button:hover {
+            background-color: #c82333;
+        }
+        .product-group input[type="file"] {
+            flex: 2;
+        }
+        .urgent {
+            background-color: red !important;
+            color: white;
+        }
+        .collected {
+    background-color: green;
+    color: white;
+}
+
+.not-collected {
+    background-color: orange;
+    color: white;
+}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Admin Dashboard</h2>
+        <div class="form-container">
+            <form id="newOrderForm">
+                <div class="form-group">
+                    <label for="newUsername">Username:</label>
+                    <input type="text" id="newUsername">
+                </div>
+                <div class="form-group">
+                    <label for="newName">Name:</label>
+                    <input type="text" id="newName">
+                </div>
+                <div class="form-group">
+                    <label for="newBusinessUnit">Business Unit (BU):</label>
+                    <select id="newBusinessUnit">
+                        <option value="" selected>Select a Business Unit</option>
+                        <option value="B2C">B2C</option>
+                        <option value="B2B">B2B</option>
+                        <option value="B2O">B2O</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="newGender">Gender:</label>
+                    <select id="newGender">
+                        <option value="None" selected>None</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="newAge">Age:</label>
+                    <input type="number" id="newAge" min="0">
+                </div>
+                <div class="form-group">
+                    <label for="newPhone">Phone Number:</label>
+                    <input type="text" id="newPhone">
+                </div>
+                <div class="form-group">
+                    <label for="newEmail">Email:</label>
+                    <input type="email" id="newEmail">
+                </div>
+                <div class="form-group">
+                    <label for="newAddress">Address:</label>
+                    <input type="text" id="newAddress">
+                </div>
+                <div class="form-group">
+                    <label for="reference">Reference:</label>
+                    <select id="reference">
+                        <option value="" selected>Select a reference</option>
+                        <option value="google_ads">Google Ads</option>
+                        <option value="instagram">Instagram</option>
+                        <option value="friends_family">Friends and Family</option>
+                        <option value="others">Others</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="zone">Zone:</label>
+                    <select id="zone">
+                        <option value="" selected>Select a Zone</option>
+                        <option value="A">A</option>
+                        <option value="B">B</option>
+                        <option value="C">C</option>
+                        <option value="D">D</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Requested Products:</label>
+                    <div id="requestedProductsContainer">
+                        <div class="product-group">
+                            <select class="product-select chosen-select">
+                                <option value="" selected>Select a product</option>
+                                <option value="Laptop">Laptop</option>
+                                <option value="Television">Television</option>
+                                <option value="Phone">Phone</option>
+                                <option value="Battery">Battery</option>
+                                <option value="Refrigerator">Refrigerator</option>
+                            </select>
+                            <input type="number" class="product-quantity" placeholder="Quantity" min="1">
+                            <button type="button" onclick="removeProduct(this)">Remove</button>
+                        </div>
+                    </div>
+                    <button type="button" onclick="addProduct()">Add Another Product</button>
+                </div>
+                <div class="form-group">
+                    <label for="poaMode">POA/Mode:</label>
+                    <select id="poaMode">
+                        <option value="" selected>Select POA/Mode</option>
+                        <option value="EV">EV</option>
+                        <option value="Tempo">Tempo</option>
+                        <option value="Train">Train</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="productFiles">Upload Product Files:</label>
+                    <input type="file" id="productFiles" multiple>
+                </div>
+                <div class="form-group">
+                    <label for="uploadPicture">Upload Picture:</label>
+                    <input type="file" id="uploadPicture">
+                </div>
+                <div class="form-group">
+                    <label for="newCertificate">Upload Certificate:</label>
+                    <input type="file" id="newCertificate">
+                </div>
+                <div class="form-group">
+                    <label for="requestStatus">Request Status:</label>
+                    <select id="requestStatus">
+                        <option value="" selected>Select Status</option>
+                        <option value="Pending">Pending</option>
+                        <option value="Approved">Approved</option>
+                        <option value="Rejected">Rejected</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="urgencyLevel">Urgency Level:</label>
+                    <select id="urgencyLevel">
+                        <option value="" selected>Select Urgency Level</option>
+                        <option value="Yes">Yes</option>
+                        <option value="No">No</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <button type="button" onclick="addOrder()">Submit Order</button>
+                </div>
+            </form>
+        </div>
+        <table id="ordersTable">
+            <thead>
+                <tr>
+                    <th>Username</th>
+                    <th>Name</th>
+                    <th>BU</th>
+                    <th>Gender</th>
+                    <th>Age</th>
+                    <th>Phone</th>
+                    <th>Email</th>
+                    <th>Address</th>
+                    <th>Zone</th>
+                    <th>Requested Products</th>
+                    <th>POA/Mode</th>
+                    <th>Product Files</th>
+                    <th>Picture</th>
+                    <th>Certificate</th>
+                    <th>Request Status</th>
+                    <th>Urgency Level</th>
+                    <th>Collection Status</th>
+                    <th>Allocated Pickup Date</th>
+                    <th>Actual Pickup Date</th>
+                    <th>Recieved Products</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Data will be inserted here -->
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            $(".chosen-select").chosen();
+        });
+
+        function addProduct() {
+            var productGroup = document.createElement('div');
+            productGroup.className = 'product-group';
+            productGroup.innerHTML = `
+                <select class="product-select chosen-select">
+                    <option value="" selected>Select a product</option>
+                    <option value="Laptop">Laptop</option>
+                    <option value="Television">Television</option>
+                    <option value="Phone">Phone</option>
+                    <option value="Battery">Battery</option>
+                    <option value="Refrigerator">Refrigerator</option>
+                </select>
+                <input type="number" class="product-quantity" placeholder="Quantity" min="1">
+                <button type="button" onclick="removeProduct(this)">Remove</button>
+            `;
+            document.getElementById('requestedProductsContainer').appendChild(productGroup);
+            $(".chosen-select").chosen();
+        }
+
+        function removeProduct(button) {
+            var productGroup = button.parentNode;
+            productGroup.parentNode.removeChild(productGroup);
+        }
+        function addOrder() {
+            console.log("addOrder function called");
+            var orderId = Date.now().toString();
+            var newUsername = document.getElementById('newUsername').value.trim();
+            var newName = document.getElementById('newName').value.trim();
+            var newBusinessUnit = document.getElementById('newBusinessUnit').value;
+            var newGender = document.getElementById('newGender').value;
+            var newAge = document.getElementById('newAge').value;
+            var newPhone = document.getElementById('newPhone').value.trim();
+            var newEmail = document.getElementById('newEmail').value.trim();
+            var newAddress = document.getElementById('newAddress').value.trim();
+            var zone = document.getElementById('zone').value;
+            var poaMode = document.getElementById('poaMode').value;
+            var requestStatus = document.getElementById('requestStatus').value;
+            var urgencyLevel = document.getElementById('urgencyLevel').value;
+            var collectionStatus = document.getElementById('collectionStatus') ? document.getElementById('collectionStatus').value : 'Not Collected';
+
+            var products = [];
+            var productSelects = document.getElementsByClassName('product-select');
+            var productQuantities = document.getElementsByClassName('product-quantity');
+            for (var i = 0; i < productSelects.length; i++) {
+                var product = productSelects[i].value;
+                var quantity = productQuantities[i].value;
+                if (product && quantity) {
+                    products.push(product + ' (x' + quantity + ')');
+                }
+            }
+
+            var productFilesInput = document.getElementById('productFiles');
+            var productFiles = Array.from(productFilesInput.files).map(file => file.name);
+            var productFilesDisplay = productFiles.length > 0 ? productFiles.join(', ') : 'No Files';
+
+            var uploadPictureInput = document.getElementById('uploadPicture');
+            var pictureName = uploadPictureInput.files.length > 0 ? uploadPictureInput.files[0].name : 'No Picture';
+
+            var certificateInput = document.getElementById('newCertificate');
+            var certificateName = certificateInput.files.length > 0 ? certificateInput.files[0].name : 'No Certificate';
+
+            var order = {
+                id: orderId,
+                username: newUsername,
+                name: newName,
+                businessUnit: newBusinessUnit,
+                gender: newGender,
+                age: newAge,
+                phone: newPhone,
+                email: newEmail,
+                address: newAddress,
+                zone: zone,
+                requestedProducts: products.join(', '),
+                poaMode: poaMode,
+                productFiles: productFilesDisplay,
+                picture: pictureName,
+                certificate: certificateName,
+                requestStatus: requestStatus,
+                urgencyLevel: urgencyLevel,
+                collectionStatus: collectionStatus,
+                allocatedPickupDate: '',
+                actualPickupDate: '',
+                receivedProducts: ''
+            };
+
+            var orders = JSON.parse(localStorage.getItem('orders')) || [];
+            orders.push(order);
+            localStorage.setItem('orders', JSON.stringify(orders));
+
+            var ordersTable = document.getElementById('ordersTable').getElementsByTagName('tbody')[0];
+            var newRow = ordersTable.insertRow();
+            newRow.insertCell(0).innerText = newUsername;
+            newRow.insertCell(1).innerText = newName;
+            newRow.insertCell(2).innerText = newBusinessUnit;
+            newRow.insertCell(3).innerText = newGender;
+            newRow.insertCell(4).innerText = newAge;
+            newRow.insertCell(5).innerText = newPhone;
+            newRow.insertCell(6).innerText = newEmail;
+            newRow.insertCell(7).innerText = newAddress;
+            newRow.insertCell(8).innerText = zone;
+            newRow.insertCell(9).innerText = products.join(', ');
+            newRow.insertCell(10).innerText = poaMode;
+            newRow.insertCell(11).innerText = productFilesDisplay;
+            newRow.insertCell(12).innerText = pictureName;
+            newRow.insertCell(13).innerText = certificateName;
+            newRow.insertCell(14).innerText = requestStatus;
+            newRow.insertCell(15).innerText = urgencyLevel;
+            newRow.insertCell(16).innerHTML = `<span class="${collectionStatus === 'Collected' ? 'collected' : 'not-collected'}">${collectionStatus}</span>`;
+            newRow.insertCell(17).innerText = ''; // Allocated Pickup Date
+            newRow.insertCell(18).innerText = ''; // Actual Pickup Date
+            newRow.insertCell(19).innerText = ''; // received products
+            var deleteButton = document.createElement('button');
+            deleteButton.innerText = 'Delete';
+            deleteButton.className = 'delete-button';
+            deleteButton.onclick = function() {
+                var row = this.parentNode.parentNode;
+                row.parentNode.removeChild(row);
+                // Also remove from localStorage
+                var orders = JSON.parse(localStorage.getItem('orders')) || [];
+                orders = orders.filter(o => o.id !== orderId);
+                localStorage.setItem('orders', JSON.stringify(orders));
+            };
+            newRow.insertCell(20).appendChild(deleteButton);
+
+            if (urgencyLevel === "Yes") {
+                newRow.classList.add('urgent');
+                ordersTable.insertBefore(newRow, ordersTable.firstChild);
+            }
+    if (collectionStatus === 'Collected') {
+        newRow.classList.remove('urgent');
+    }
+            document.getElementById('newOrderForm').reset();
+            $(".chosen-select").trigger("chosen:updated");
+        }
+
+        // Load existing orders when the page loads
+        window.onload = function() {
+    var orders = JSON.parse(localStorage.getItem('orders')) || [];
+    var ordersTable = document.getElementById('ordersTable').getElementsByTagName('tbody')[0];
+    orders.forEach(order => {
+        var newRow = ordersTable.insertRow();
+        newRow.insertCell(0).innerText = order.username;
+        newRow.insertCell(1).innerText = order.name;
+        newRow.insertCell(2).innerText = order.businessUnit;
+        newRow.insertCell(3).innerText = order.gender;
+        newRow.insertCell(4).innerText = order.age;
+        newRow.insertCell(5).innerText = order.phone;
+        newRow.insertCell(6).innerText = order.email;
+        newRow.insertCell(7).innerText = order.address;
+        newRow.insertCell(8).innerText = order.zone;
+        newRow.insertCell(9).innerText = order.requestedProducts;
+        newRow.insertCell(10).innerText = order.poaMode;
+        newRow.insertCell(11).innerText = order.productFiles;
+        newRow.insertCell(12).innerText = order.picture;
+        newRow.insertCell(13).innerText = order.certificate;
+        newRow.insertCell(14).innerText = order.requestStatus;
+        newRow.insertCell(15).innerText = order.urgencyLevel;
+        newRow.insertCell(16).innerHTML = `<span class="${order.collectionStatus === 'Collected' ? 'collected' : 'not-collected'}">${order.collectionStatus}</span>`;
+        newRow.insertCell(17).innerText = order.allocatedPickupDate;
+        newRow.insertCell(18).innerText = order.actualPickupDate;
+        newRow.insertCell(19).innerText = order.receivedProducts;
+
+        var deleteButton = document.createElement('button');
+        deleteButton.innerText = 'Delete';
+        deleteButton.className = 'delete-button';
+        deleteButton.onclick = function() {
+            var row = this.parentNode.parentNode;
+            row.parentNode.removeChild(row);
+            // Also remove from localStorage
+            var orders = JSON.parse(localStorage.getItem('orders')) || [];
+            orders = orders.filter(o => o.id !== order.id);
+            localStorage.setItem('orders', JSON.stringify(orders));
+        };
+        newRow.insertCell(20).appendChild(deleteButton);
+
+        if (order.urgencyLevel === "Yes" && order.collectionStatus !== 'Collected') {
+            newRow.classList.add('urgent');
+        }
+
+        if (order.collectionStatus === 'Collected') {
+            newRow.classList.remove('urgent');
+        }
+    });
+};
+
+    </script>
+</body>
+</html>

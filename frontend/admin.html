@@ -142,11 +142,35 @@
     background-color: orange;
     color: white;
 }
+.header {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+
+        .logout-button {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            border-radius: 4px;
+        }
+        .logout-button:hover {
+            background-color: #c82333;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h2>Admin Dashboard</h2>
+        <div class="header">
+            <button class="logout-button" onclick="logout()">Logout</button>
+        </div>
+        
         <div class="form-container">
             <form id="newOrderForm">
                 <div class="form-group">
@@ -307,7 +331,9 @@
         $(document).ready(function() {
             $(".chosen-select").chosen();
         });
-
+        function logout() {
+    window.location.href = 'index.html';
+}
         function addProduct() {
             var productGroup = document.createElement('div');
             productGroup.className = 'product-group';

@@ -87,17 +87,20 @@
                 body: JSON.stringify({ username: username, pwd: password })
             })
             .then(res => {
-                console.log(res.status)
-                if (res.status == 200) {
-                    localStorage.setItem('adminLoggedIn', 'true');
-                    alert('Admin login successful!');
-                    window.location.href = 'admin.html';
+                if (res.status === 200) {
+                    return res.json();  
                 } else {
-                    alert('Invalid admin credentials!');
+                    alert('Invalid Admin credentials!');
+                    throw new Error('Invalid credentials');
                 }
             })
+            .then(data => {
+                localStorage.setItem('loggedInUserRole', data.loggedUser.role);
+                alert('Admin login successful!');
+                console.log(data);
+                window.location.href = 'admin.html';
+            })
             .catch(error => {
-                console.error('Error during login:', error);
                 alert('An error occurred while trying to log in. Please try again later.');
             });
         });

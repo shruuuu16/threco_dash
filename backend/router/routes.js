@@ -37,7 +37,7 @@ router.get('/profile' , authenticate , (req,res) => {
     return res.send(req.rootUser);
 })
 
-router.get('/allProducts' , (req,res) => {
+router.get('/getAllProducts' , (req,res) => {
     Product.find()
         .then((products) => {
             res.send(products)
@@ -54,33 +54,20 @@ router.get('/getProduct/:id' , (req,res) => {
 })
 
 router.post('/logout' , (req,res) => {
-    res.clearCookie("jwtoken", {path: "/",domain:"127.0.0.1", httpOnly: true, secure: true, sameSite:"none" });
+    res.clearCookie("jwtoken", {path: "/", httpOnly: true, secure: true, sameSite:"none" });
     res.status(200).json({message:"Logged out Successfully!"})
     return res.status(200).send('Logged out');
 })
 
-router.post('/deleteProduct', authenticate, (req, res) => {
-    // Delete the campaign from the Product collection
-    Product.deleteOne({ _id: req.body._id })
-        .then(() => {
-            // After the campaign is deleted, remove it from the user's yourproducts array
-            User.findOneAndUpdate(
-                {_id:req.UserID}, 
-                { $pull: { yourproducts: { 'campaign.campaign_id': req.body._id } } },
-                { new: true }
-            )
-            .then((updatedUser)=>{console.log("User Updated")})
-            .catch((e) => {console.log(e)})
-        })
-        .then(() => {
-            console.log(`Deleted campaign with ID ${req.body._id}`);
-            res.status(200).send("Deleted");
-        })
-        .catch((e) => {
-            res.status(400).send(e);
-        });
+router.delete('/deleteProduct/:id', async (req, res) => {
+    try {
+        const productId = req.params.id;
+        await Product.findByIdAndDelete(productId);
+        res.status(200).json({ message: 'Product deleted successfully' });
+    } catch (error) {
+        res.status(500).json({ message: 'Failed to delete product', error });
+    }
 });
-
 
 
 router.post('/register' , (req , res) => {
@@ -172,25 +159,42 @@ router.post('/login' , (req , res) => {
         })
 })
 
-router.post('/addProduct' , authenticate , (req,res) => {
-    const { name, title, description, towards, target, deadline, image } = req.body
-
+router.post('/addProduct' , (req,res) => {
     //adds campaign to the db
-    Product.findOne({title: title})
+    Product.findOne({name: req.body.name})
         .then((existingProduct) => {
             if(existingProduct){
                 return res.status(422).json({message: "Product already Exists"})
             }
             else
             {
-                const campaign = new Product({name, title, description, towards, target, deadline, image})
-                campaign.save()
+                const newProduct = new Product({
+                    username: req.body.username,
+                    name: req.body.name,
+                    businessUnit: req.body.businessUnit,
+                    gender: req.body.gender,
+                    age: req.body.age,
+                    phone: req.body.phone,
+                    email: req.body.email,
+                    address: req.body.address,
+                    reference: req.body.reference,
+                    zone: req.body.zone,
+                    requestedProducts: req.body.requestedProducts,
+                    poaMode: req.body.poaMode,
+                    productFiles: req.body.productFiles,  
+                    picture: req.body.picture,  
+                    certificate: req.body.certificate,  
+                    requestStatus: req.body.requestStatus,
+                    urgencyLevel: req.body.urgencyLevel
+                });
+
+                newProduct.save()
                 .then(() => {
-                    // res.status(201).json({message: "Product added Succesfully"})
+                    res.status(201).json({message: "Product added Succesfully"})
                     console.log("Product added Succesfully")
 
                 })
-                .catch((e) => res.status(500).json({message: "Failed to add campaign"}))
+                .catch((e) => res.status(500).json({message: "Failed to add Product"}))
             }
         
             })
@@ -198,22 +202,11 @@ router.post('/addProduct' , authenticate , (req,res) => {
 
 })
 
-router.post('/updateProduct' , (req,res) => {
-    const { id, name, title, description, towards, target, deadline, image } = req.body
-    
-    if( !name || !title || !description|| !towards || !target || !deadline || !image){
-        res.status(400).json({error: "Pls Fill all the fields"})
-    }
+router.put('/updateProduct' , (req,res) => {
 
-    Product.updateOne({_id: id } , {
-        name : name,
-        title : title,
-        description : description,
-        towards : towards,
-        target : target,
-        deadline : deadline,
-        image : image
-    })
+    const { id, ...updatedData} = req.body;
+
+    Product.updateOne({_id: id } , { updatedData })
     .then((updatedProduct)=>{res.status(201).json({message: "Product updated Succesfully", })})
     .catch((e)=>{
         console.log(e);

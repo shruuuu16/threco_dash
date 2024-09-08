@@ -94,10 +94,15 @@
                 }
             })
             .then(data => {
-                localStorage.setItem('loggedInUserRole', data.loggedUser.role);
-                alert('Logistics login successful!');
-                console.log(data);
-                window.location.href = 'logistics.html';
+                if(data.loggedUser.role == "logistic"){
+                    localStorage.setItem('loggedInUserRole', data.loggedUser.role);
+                    alert('Logistics login successful!');
+                    console.log(data);
+                    window.location.href = 'logistics.html';
+                }
+                else{
+                    alert('Plese login using Logistics account!');
+                }
             })
             .catch(error => {
                 alert('An error occurred while trying to log in. Please try again later.');

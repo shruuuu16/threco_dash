@@ -6,6 +6,7 @@
     <title>Admin Dashboard</title>
     <script src="https://code.jquery.com/jquery-2.2.4.js" integrity="sha256-iT6Q9iMJYuQiMWNd9lDyBUStIq/8PuOW33aOqmvFpqI=" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.jquery.js" integrity="sha512-eSeh0V+8U3qoxFnK3KgBsM69hrMOGMBy3CNxq/T4BArsSQJfKVsKb5joMqIPrNMjRQSTl4xG8oJRpgU2o9I7HQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.min.css" integrity="sha512-yVvxUQV0QESBt1SyZbNJMAwyKvFTLMyXSyBHDO4BG5t7k/Lw34tyqlSDlKIrIENIzCl+RVUNjmCPG+V/GMesRw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
         body {
@@ -267,7 +268,7 @@
                 </div>
                 <div class="form-group">
                     <label for="uploadPicture">Upload Picture:</label>
-                    <input type="file" id="uploadPicture">
+                    <input type="file" id="uploadPicture" multiple>
                 </div>
                 <div class="form-group">
                     <label for="newCertificate">Upload Certificate:</label>
@@ -291,7 +292,10 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <button type="button" onclick="addOrder()">Submit Order</button>
+                    <button type="button" id="submitOrderBtn" onclick="addOrder()">
+                        <i id="spinner" class="fas fa-spinner fa-spin" style="display: none; margin-right: 8px;"></i>
+                        <span id="buttonText">Submit Order</span>
+                    </button>
                 </div>
             </form>
         </div>
@@ -328,12 +332,33 @@
     </div>
 
     <script>
-        $(document).ready(function() {
+        document.addEventListener('DOMContentLoaded', function() {
+            loadOrders();  // Load existing orders when the page loads
+
+            // Initialize chosen selects
             $(".chosen-select").chosen();
         });
+        
         function logout() {
-    window.location.href = 'index.html';
-}
+            fetch('http://localhost:5000/logout', { 
+                method: 'POST',
+                credentials: 'include',
+            })
+            .then(response => {
+                if (response.ok) {
+                    localStorage.clear();
+                    alert("Logged out successfully!");
+                    window.location.href = 'index.html';
+                } else {
+                    alert("Failed to log out. Please try again.");
+                }
+            })
+            .catch(error => {
+                console.error('Error logging out:', error);
+                alert("An error occurred while logging out.");
+            });
+        }
+
         function addProduct() {
             var productGroup = document.createElement('div');
             productGroup.className = 'product-group';
@@ -357,168 +382,247 @@
             var productGroup = button.parentNode;
             productGroup.parentNode.removeChild(productGroup);
         }
-        function addOrder() {
-            console.log("addOrder function called");
-            var orderId = Date.now().toString();
-            var newUsername = document.getElementById('newUsername').value.trim();
-            var newName = document.getElementById('newName').value.trim();
-            var newBusinessUnit = document.getElementById('newBusinessUnit').value;
-            var newGender = document.getElementById('newGender').value;
-            var newAge = document.getElementById('newAge').value;
-            var newPhone = document.getElementById('newPhone').value.trim();
-            var newEmail = document.getElementById('newEmail').value.trim();
-            var newAddress = document.getElementById('newAddress').value.trim();
-            var zone = document.getElementById('zone').value;
-            var poaMode = document.getElementById('poaMode').value;
-            var requestStatus = document.getElementById('requestStatus').value;
-            var urgencyLevel = document.getElementById('urgencyLevel').value;
-            var collectionStatus = document.getElementById('collectionStatus') ? document.getElementById('collectionStatus').value : 'Not Collected';
 
-            var products = [];
+        var products = [];
+        function getRequestedProducts() {
+            // Function to get the requested products dynamically
             var productSelects = document.getElementsByClassName('product-select');
             var productQuantities = document.getElementsByClassName('product-quantity');
             for (var i = 0; i < productSelects.length; i++) {
                 var product = productSelects[i].value;
                 var quantity = productQuantities[i].value;
                 if (product && quantity) {
-                    products.push(product + ' (x' + quantity + ')');
+                    products.push({ product: product, quantity: quantity });
                 }
             }
+            return products;
+        }
 
-            var productFilesInput = document.getElementById('productFiles');
-            var productFiles = Array.from(productFilesInput.files).map(file => file.name);
-            var productFilesDisplay = productFiles.length > 0 ? productFiles.join(', ') : 'No Files';
+        async function uploadFilesToCloudinary(file) {
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('upload_preset', 'ml_default'); // Replace with your Cloudinary upload preset
+            // formData.append('resource_type', 'raw');  // Explicitly set resource type to 'raw'
 
-            var uploadPictureInput = document.getElementById('uploadPicture');
-            var pictureName = uploadPictureInput.files.length > 0 ? uploadPictureInput.files[0].name : 'No Picture';
-
-            var certificateInput = document.getElementById('newCertificate');
-            var certificateName = certificateInput.files.length > 0 ? certificateInput.files[0].name : 'No Certificate';
-
-            var order = {
-                id: orderId,
-                username: newUsername,
-                name: newName,
-                businessUnit: newBusinessUnit,
-                gender: newGender,
-                age: newAge,
-                phone: newPhone,
-                email: newEmail,
-                address: newAddress,
-                zone: zone,
-                requestedProducts: products.join(', '),
-                poaMode: poaMode,
-                productFiles: productFilesDisplay,
-                picture: pictureName,
-                certificate: certificateName,
-                requestStatus: requestStatus,
-                urgencyLevel: urgencyLevel,
-                collectionStatus: collectionStatus,
-                allocatedPickupDate: '',
-                actualPickupDate: '',
-                receivedProducts: ''
-            };
-
-            var orders = JSON.parse(localStorage.getItem('orders')) || [];
-            orders.push(order);
-            localStorage.setItem('orders', JSON.stringify(orders));
-
-            var ordersTable = document.getElementById('ordersTable').getElementsByTagName('tbody')[0];
-            var newRow = ordersTable.insertRow();
-            newRow.insertCell(0).innerText = newUsername;
-            newRow.insertCell(1).innerText = newName;
-            newRow.insertCell(2).innerText = newBusinessUnit;
-            newRow.insertCell(3).innerText = newGender;
-            newRow.insertCell(4).innerText = newAge;
-            newRow.insertCell(5).innerText = newPhone;
-            newRow.insertCell(6).innerText = newEmail;
-            newRow.insertCell(7).innerText = newAddress;
-            newRow.insertCell(8).innerText = zone;
-            newRow.insertCell(9).innerText = products.join(', ');
-            newRow.insertCell(10).innerText = poaMode;
-            newRow.insertCell(11).innerText = productFilesDisplay;
-            newRow.insertCell(12).innerText = pictureName;
-            newRow.insertCell(13).innerText = certificateName;
-            newRow.insertCell(14).innerText = requestStatus;
-            newRow.insertCell(15).innerText = urgencyLevel;
-            newRow.insertCell(16).innerHTML = `<span class="${collectionStatus === 'Collected' ? 'collected' : 'not-collected'}">${collectionStatus}</span>`;
-            newRow.insertCell(17).innerText = ''; // Allocated Pickup Date
-            newRow.insertCell(18).innerText = ''; // Actual Pickup Date
-            newRow.insertCell(19).innerText = ''; // received products
-            var deleteButton = document.createElement('button');
-            deleteButton.innerText = 'Delete';
-            deleteButton.className = 'delete-button';
-            deleteButton.onclick = function() {
-                var row = this.parentNode.parentNode;
-                row.parentNode.removeChild(row);
-                // Also remove from localStorage
-                var orders = JSON.parse(localStorage.getItem('orders')) || [];
-                orders = orders.filter(o => o.id !== orderId);
-                localStorage.setItem('orders', JSON.stringify(orders));
-            };
-            newRow.insertCell(20).appendChild(deleteButton);
-
-            if (urgencyLevel === "Yes") {
-                newRow.classList.add('urgent');
-                ordersTable.insertBefore(newRow, ordersTable.firstChild);
+            try {
+                const response = await fetch('https://api.cloudinary.com/v1_1/dl8c4ux5w/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await response.json();
+                console.log("Uploaded URL: "+ data.secure_url);
+                return data.secure_url;  // Return the uploaded file's URL
+            } catch (error) {
+                console.error('Error uploading file to Cloudinary:', error);
+                alert('Failed to upload file to Cloudinary.');
             }
-    if (collectionStatus === 'Collected') {
-        newRow.classList.remove('urgent');
-    }
-            document.getElementById('newOrderForm').reset();
-            $(".chosen-select").trigger("chosen:updated");
         }
 
-        // Load existing orders when the page loads
-        window.onload = function() {
-    var orders = JSON.parse(localStorage.getItem('orders')) || [];
-    var ordersTable = document.getElementById('ordersTable').getElementsByTagName('tbody')[0];
-    orders.forEach(order => {
-        var newRow = ordersTable.insertRow();
-        newRow.insertCell(0).innerText = order.username;
-        newRow.insertCell(1).innerText = order.name;
-        newRow.insertCell(2).innerText = order.businessUnit;
-        newRow.insertCell(3).innerText = order.gender;
-        newRow.insertCell(4).innerText = order.age;
-        newRow.insertCell(5).innerText = order.phone;
-        newRow.insertCell(6).innerText = order.email;
-        newRow.insertCell(7).innerText = order.address;
-        newRow.insertCell(8).innerText = order.zone;
-        newRow.insertCell(9).innerText = order.requestedProducts;
-        newRow.insertCell(10).innerText = order.poaMode;
-        newRow.insertCell(11).innerText = order.productFiles;
-        newRow.insertCell(12).innerText = order.picture;
-        newRow.insertCell(13).innerText = order.certificate;
-        newRow.insertCell(14).innerText = order.requestStatus;
-        newRow.insertCell(15).innerText = order.urgencyLevel;
-        newRow.insertCell(16).innerHTML = `<span class="${order.collectionStatus === 'Collected' ? 'collected' : 'not-collected'}">${order.collectionStatus}</span>`;
-        newRow.insertCell(17).innerText = order.allocatedPickupDate;
-        newRow.insertCell(18).innerText = order.actualPickupDate;
-        newRow.insertCell(19).innerText = order.receivedProducts;
+        async function addOrder() {
+            const submitButton = document.getElementById('submitOrderBtn');
+            const spinner = document.getElementById('spinner');
+            const buttonText = document.getElementById('buttonText');
 
-        var deleteButton = document.createElement('button');
-        deleteButton.innerText = 'Delete';
-        deleteButton.className = 'delete-button';
-        deleteButton.onclick = function() {
-            var row = this.parentNode.parentNode;
-            row.parentNode.removeChild(row);
-            // Also remove from localStorage
-            var orders = JSON.parse(localStorage.getItem('orders')) || [];
-            orders = orders.filter(o => o.id !== order.id);
-            localStorage.setItem('orders', JSON.stringify(orders));
-        };
-        newRow.insertCell(20).appendChild(deleteButton);
+            spinner.style.display = 'inline-block';  // Show spinner
+            buttonText.innerText = 'Submitting your order...';  // Update button text
+            submitButton.disabled = true;  // Disable the button to prevent multiple clicks
 
-        if (order.urgencyLevel === "Yes" && order.collectionStatus !== 'Collected') {
-            newRow.classList.add('urgent');
+            try {
+                const productFilesInput = document.getElementById('productFiles');
+                const uploadPictureInput = document.getElementById('uploadPicture');
+                const certificateInput = document.getElementById('newCertificate');
+
+                // Collect Product Files URLs
+                const productFilesURLs = [];
+                for (const file of productFilesInput.files) {
+                    const url = await uploadFilesToCloudinary(file);
+                    if (url) productFilesURLs.push(url);
+                }
+
+                // Collect Picture URLs
+                const pictureURLs = [];
+                for (const file of uploadPictureInput.files) {
+                    const url = await uploadFilesToCloudinary(file);
+                    if (url) pictureURLs.push(url);
+                }
+
+                // Collect Certificate URL (assuming only one certificate file)
+                let certificateURL = '';
+                if (certificateInput.files.length > 0) {
+                    certificateURL = await uploadFilesToCloudinary(certificateInput.files[0]);
+                } 
+
+                var products = getRequestedProducts();
+                var formdata = {
+                    username: document.getElementById('newUsername').value,
+                    name: document.getElementById('newName').value,
+                    businessUnit: document.getElementById('newBusinessUnit').value,
+                    gender: document.getElementById('newGender').value,
+                    age: document.getElementById('newAge').value,
+                    phone: document.getElementById('newPhone').value,
+                    email: document.getElementById('newEmail').value,
+                    address: document.getElementById('newAddress').value,  
+                    reference: document.getElementById('reference').value,  
+                    zone: document.getElementById('zone').value,
+                    requestedProducts: products,  
+                    poaMode: document.getElementById('poaMode').value,
+                    productFiles: productFilesURLs, 
+                    picture: pictureURLs,  
+                    certificate: certificateURL,  
+                    requestStatus: document.getElementById('requestStatus').value,
+                    urgencyLevel: document.getElementById('urgencyLevel').value,
+                }
+
+                const response = await fetch('http://localhost:5000/addProduct', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formdata)
+                });
+
+                const data = await response.json();
+                if (response.ok) {
+                    alert('Order submitted successfully!');
+                    console.log('Order data:', data);
+                    document.getElementById('newOrderForm').reset();
+                    $(".chosen-select").trigger("chosen:updated");  // Re-initialize chosen select elements if needed
+                    loadOrders();
+                } 
+                else {
+                    alert('Failed to submit order: ' + data.message);
+                }
+            } catch (error) {
+                console.error('Error submitting order:', error);
+                alert('An error occurred while submitting the order.');
+            } finally {
+                // Hide loading spinner and reset button text
+                spinner.style.display = 'none';  // Hide spinner
+                buttonText.innerText = 'Submit Order';  // Reset button text
+                submitButton.disabled = false;  // Enable the button again
+            }
         }
 
-        if (order.collectionStatus === 'Collected') {
-            newRow.classList.remove('urgent');
-        }
-    });
-};
+        async function loadOrders() {
+            try {
+                const response = await fetch('http://localhost:5000/getAllProducts');
+                const orders = await response.json();
 
+                if (response.ok) {
+                    displayOrders(orders);  // Display the orders in the table
+                } else {
+                    console.error('Failed to fetch orders:', orders.message);
+                }
+            } catch (error) {
+                console.error('Error fetching orders:', error);
+            }
+        }
+
+        async function deleteOrder(orderId) {
+            try {
+                const response = await fetch(`http://localhost:5000/deleteProduct/${orderId}`, {
+                    method: 'DELETE',
+                });
+
+                const responseData = await response.json();
+                if (response.ok) {
+                    alert('Order deleted successfully!');
+                    loadOrders();  // Reload orders to refresh the table
+                } else {
+                    alert('Failed to delete order: ' + responseData.message);
+                }
+            } catch (error) {
+                console.error('Error deleting order:', error);
+                alert('An error occurred while deleting the order.');
+            }
+        }
+
+        function displayOrders(orders) {
+            const ordersTable = document.getElementById('ordersTable').getElementsByTagName('tbody')[0];
+            ordersTable.innerHTML = '';  // Clear existing table rows
+
+            orders.forEach(order => {
+                const newRow = ordersTable.insertRow();
+                newRow.insertCell(0).innerText = order.username;
+                newRow.insertCell(1).innerText = order.name;
+                newRow.insertCell(2).innerText = order.businessUnit;
+                newRow.insertCell(3).innerText = order.gender;
+                newRow.insertCell(4).innerText = order.age;
+                newRow.insertCell(5).innerText = order.phone;
+                newRow.insertCell(6).innerText = order.email;
+                newRow.insertCell(7).innerText = order.address;
+                newRow.insertCell(8).innerText = order.zone;
+                newRow.insertCell(9).innerText = order.requestedProducts;
+                newRow.insertCell(10).innerText = order.poaMode;
+                
+                const linkColor = order.urgencyLevel === "Yes" ? "white" : "#007bff";
+
+                const productFilesCell = newRow.insertCell(11);
+                if (Array.isArray(order.productFiles) && order.productFiles.length > 0) {
+                    order.productFiles.forEach((file, index) => {
+                        const link = document.createElement('a');
+                        link.href = file;
+                        link.target = '_blank';  // Open in new tab
+                        link.innerText = `File ${index + 1}`;  // Label as "File 1", "File 2", etc.
+                        link.style.color = linkColor;  // Set link color based on urgency
+                        productFilesCell.appendChild(link);
+                        productFilesCell.appendChild(document.createElement('br'));  // Line break for each file
+                    });
+                } else {
+                    productFilesCell.innerText = 'No Files';
+                }
+
+                const pictureCell = newRow.insertCell(12);
+                if (Array.isArray(order.picture) && order.picture.length > 0) {
+                    order.picture.forEach((pic, index) => {
+                        const link = document.createElement('a');
+                        link.href = pic;
+                        link.target = '_blank';  // Open in new tab
+                        link.innerText = `Image ${index + 1}`;  // Label as "Picture 1", "Picture 2", etc.
+                        link.style.color = linkColor;  // Set link color based on urgency
+                        pictureCell.appendChild(link);
+                        pictureCell.appendChild(document.createElement('br'));  // Line break for each picture
+                    });
+                } else {
+                    pictureCell.innerText = 'No Pictures';
+                }
+
+                const certificateCell = newRow.insertCell(13);
+                if (order.certificate) {
+                    const link = document.createElement('a');
+                    link.href = order.certificate;
+                    link.target = '_blank';  // Open in new tab
+                    link.innerText = 'Certificate';  // Label as "Certificate"
+                    link.style.color = linkColor;  // Set link color based on urgency
+                    certificateCell.appendChild(link);
+                } else {
+                    certificateCell.innerText = 'No Certificate';
+                }
+                newRow.insertCell(14).innerText = order.requestStatus;
+                newRow.insertCell(15).innerText = order.urgencyLevel;
+                newRow.insertCell(16).innerHTML = `<span class="${order.collectionStatus === 'Collected' ? 'collected' : 'not-collected'}">${order.collectionStatus}</span>`;
+                newRow.insertCell(17).innerText = order.allocatedPickupDate || "";
+                newRow.insertCell(18).innerText = order.actualPickupDate || "";
+                newRow.insertCell(19).innerText = order.receivedProducts | "";
+
+                const deleteButton = document.createElement('button');
+                deleteButton.innerText = 'Delete';
+                deleteButton.className = 'delete-button';
+                deleteButton.onclick = function() {
+                    deleteOrder(order._id);  // Call deleteOrder function to delete the order
+                };
+                newRow.insertCell(20).appendChild(deleteButton);
+
+                if (order.urgencyLevel === "Yes" && order.collectionStatus !== 'Collected') {
+                    newRow.classList.add('urgent');
+                }
+
+                if (order.collectionStatus === 'Collected') {
+                    newRow.classList.remove('urgent');
+                }
+            });
+        }
+        
     </script>
 </body>
 </html>

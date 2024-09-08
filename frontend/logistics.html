@@ -116,7 +116,7 @@
        document.addEventListener('DOMContentLoaded', function() {
     console.log('DOM fully loaded and parsed.');
 
-    if (!localStorage.getItem('logisticsLoggedIn')) {
+    if (!localStorage.getItem('loggedInUserRole') && localStorage.getItem('loggedInUserRole') != "logistic") {
         alert('Please log in first.');
         window.location.href = 'logistics.login.html';
         return;
@@ -124,83 +124,120 @@
 
     const ordersTable = document.getElementById('ordersTable').getElementsByTagName('tbody')[0];
 
-    function renderOrders() {
-    let orders = JSON.parse(localStorage.getItem('orders')) || [];
-    console.log('All orders:', orders);
+    // Load orders from the backend
+    async function loadOrders() {
+        try {
+            const response = await fetch('http://localhost:5000/getAllProducts');
+            const orders = await response.json();
+            console.log('All orders:', orders);
 
-    // Filter for approved orders
-    orders = orders.filter(order => order.requestStatus === 'Approved');
-    console.log('Approved orders:', orders);
+            // Filter for approved orders
+            const approvedOrders = orders.filter(order => order.requestStatus === 'Approved');
+            console.log('Approved orders:', approvedOrders);
 
-    ordersTable.innerHTML = '';
-
-    // Sort orders: urgent and not collected orders on top
-    orders.sort((a, b) => {
-        if (a.urgencyLevel === "Yes" && a.collectionStatus !== 'Collected' && (b.urgencyLevel !== "Yes" || b.collectionStatus === 'Collected')) return -1;
-        if ((a.urgencyLevel !== "Yes" || a.collectionStatus === 'Collected') && b.urgencyLevel === "Yes" && b.collectionStatus !== 'Collected') return 1;
-        return 0;
-    });
-
-    orders.forEach(order => {
-        // Apply urgent class if order is urgent and not collected
-        const isUrgent = order.urgencyLevel === "Yes" && order.collectionStatus !== 'Collected' ? 'urgent' : '';
-        const collectedClass = order.collectionStatus === 'Collected' ? 'urgent-collected' : '';
-
-        const row = ordersTable.insertRow();
-        row.className = `${isUrgent} ${collectedClass}`;
-
-        row.innerHTML = `
-            <td>${order.name}</td>
-            <td>${order.address}</td>
-            <td>${order.phone || ''}</td>
-            <td>${order.zone || ''}</td>
-            <td>${order.poaMode || ''}</td>
-            <td>
-                <input type="date" value="${order.allocatedPickupDate || ''}" data-id="${order.id}" class="allocatedPickupDate">
-            </td>
-            <td>
-                <input type="date" value="${order.actualPickupDate || ''}" data-id="${order.id}" class="actualPickupDate">
-            </td>
-            <td>
-                <select data-id="${order.id}" class="collectionStatus">
-                    <option value="Not Collected" ${order.collectionStatus === 'Not Collected' ? 'selected' : ''}>Not Collected</option>
-                    <option value="Collected" ${order.collectionStatus === 'Collected' ? 'selected' : ''}>Collected</option>
-                </select>
-            </td>
-            <td><input type="text" value="${order.collectedBy || ''}" data-id="${order.id}" class="collectedBy"></td>
-            <td><input type="text" value="${order.receivedProducts || ''}" data-id="${order.id}" class="receivedProducts" placeholder="Enter received products"></td>
-            <td>
-                <input type="file" accept="image/png, image/jpeg" data-id="${order.id}" class="pictureInput">
-                <button class="upload-btn" data-id="${order.id}">Upload</button>
-            </td>
-            <td>
-                <input type="file" accept="image/png, image/jpeg" data-id="${order.id}" class="pickupSheetInput">
-                <button class="upload-btn" data-id="${order.id}">Upload Pickup Sheet</button>
-            </td>
-            <td><button data-id="${order.id}" class="save-btn">Save</button></td>
-        `;
-    });
-}
-
-    function saveOrderChanges(orderId, changes) {
-    let orders = JSON.parse(localStorage.getItem('orders')) || [];
-    const index = orders.findIndex(o => o.id === orderId);
-
-    if (index > -1) {
-        // Ensure that when an order is collected, it is no longer marked as urgent
-        if (changes.collectionStatus === 'Collected') {
-            changes.urgencyLevel = "No"; // Reset urgency when collected
+            displayOrders(approvedOrders);
+        } catch (error) {
+            console.error('Error loading orders:', error);
         }
-
-        orders[index] = { ...orders[index], ...changes };
-        localStorage.setItem('orders', JSON.stringify(orders));
-        alert('Order updated successfully!');
-        renderOrders(); // Re-render orders to update the display
     }
-}
+
+    // Display orders in the table
+    function displayOrders(orders) {
+        ordersTable.innerHTML = ''; // Clear existing table rows
+
+        // Sort orders: urgent and not collected orders on top
+        orders.sort((a, b) => {
+            if (a.urgencyLevel === "Yes" && a.collectionStatus !== 'Collected' && (b.urgencyLevel !== "Yes" || b.collectionStatus === 'Collected')) return -1;
+            if ((a.urgencyLevel !== "Yes" || a.collectionStatus === 'Collected') && b.urgencyLevel === "Yes" && b.collectionStatus !== 'Collected') return 1;
+            return 0;
+        });
+
+        orders.forEach(order => {
+            // Apply urgent class if order is urgent and not collected
+            const isUrgent = order.urgencyLevel === "Yes" && order.collectionStatus !== 'Collected' ? 'urgent' : '';
+            const collectedClass = order.collectionStatus === 'Collected' ? 'urgent-collected' : '';
+
+            const row = ordersTable.insertRow();
+            row.className = `${isUrgent} ${collectedClass}`;
+
+            row.innerHTML = `
+                <td>${order.name}</td>
+                <td>${order.address}</td>
+                <td>${order.phone || ''}</td>
+                <td>${order.zone || ''}</td>
+                <td>${order.poaMode || ''}</td>
+                <td>
+                    <input type="date" value="${order.allocatedPickupDate || ''}" data-id="${order._id}" class="allocatedPickupDate">
+                </td>
+                <td>
+                    <input type="date" value="${order.actualPickupDate || ''}" data-id="${order._id}" class="actualPickupDate">
+                </td>
+                <td>
+                    <select data-id="${order._id}" class="collectionStatus">
+                        <option value="Not Collected" ${order.collectionStatus === 'Not Collected' ? 'selected' : ''}>Not Collected</option>
+                        <option value="Collected" ${order.collectionStatus === 'Collected' ? 'selected' : ''}>Collected</option>
+                    </select>
+                </td>
+                <td><input type="text" value="${order.collectedBy || ''}" data-id="${order._id}" class="collectedBy"></td>
+                <td><input type="text" value="${order.receivedProducts || ''}" data-id="${order._id}" class="receivedProducts" placeholder="Enter received products"></td>
+                <td>
+                    <input type="file" accept="image/png, image/jpeg" data-id="${order._id}" class="pictureInput">
+                    <button class="upload-btn" data-id="${order._id}">Upload</button>
+                </td>
+                <td>
+                    <input type="file" accept="image/png, image/jpeg" data-id="${order._id}" class="pickupSheetInput">
+                    <button class="upload-btn" data-id="${order._id}">Upload Pickup Sheet</button>
+                </td>
+                <td><button data-id="${order._id}" class="save-btn">Save</button></td>
+            `;
+        });
+    }
+
+    // Save order changes to backend
+    async function saveOrderChanges(orderId, changes) {
+        try {
+            const response = await fetch('http://localhost:5000/updateProduct', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    id: orderId,
+                    ...changes
+                })
+            });
+
+            if (response.ok) {
+                alert('Order updated successfully!');
+                loadOrders(); // Reload orders to update the display
+            } else {
+                const data = await response.json();
+                alert('Failed to update order: ' + data.message);
+            }
+        } catch (error) {
+            console.error('Error updating order:', error);
+        }
+    }
+
+    // Handle file upload
+    async function uploadFiles(orderId, formData) {
+        try {
+            const response = await fetch('/upload', {
+                method: 'POST',
+                body: formData
+            });
+
+            const data = await response.json();
+            alert(data.message);
+            loadOrders();  // Reload orders after upload
+        } catch (error) {
+            console.error('Error uploading files:', error);
+            alert('An error occurred while uploading the files.');
+        }
+    }
 
     // Listen for changes in inputs or select elements
-    ordersTable.addEventListener('change', function(event) {
+    ordersTable.addEventListener('change', function (event) {
         const target = event.target;
         if (target.tagName === 'SELECT' || target.tagName === 'INPUT') {
             const orderId = target.getAttribute('data-id');
@@ -223,7 +260,7 @@
     });
 
     // Listen for save or upload button clicks
-    ordersTable.addEventListener('click', function(event) {
+    ordersTable.addEventListener('click', function (event) {
         if (event.target.classList.contains('save-btn')) {
             const orderId = event.target.getAttribute('data-id');
             console.log('Save button clicked for order ID:', orderId);
@@ -258,23 +295,14 @@
                 if (pickupSheetFile) formData.append('pickupSheet', pickupSheetFile);
                 formData.append('orderId', orderId);
 
-                fetch('/upload', {
-                    method: 'POST',
-                    body: formData
-                }).then(response => response.json())
-                  .then(data => {
-                      alert(data.message);
-                  })
-                  .catch(error => {
-                      console.error('Error:', error);
-                  });
+                uploadFiles(orderId, formData);
             } else {
                 alert('Please select a file to upload.');
             }
         }
     });
 
-    renderOrders(); // Initial render
+    loadOrders(); // Initial load
 });
 
     

@@ -161,7 +161,7 @@ router.post('/login' , (req , res) => {
 
 router.post('/addProduct' , (req,res) => {
     //adds campaign to the db
-    Product.findOne({name: req.body.name})
+    Product.findOne({username: req.body.username})
         .then((existingProduct) => {
             if(existingProduct){
                 return res.status(422).json({message: "Product already Exists"})

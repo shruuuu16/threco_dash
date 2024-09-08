@@ -7,7 +7,7 @@ const router = express.Router()
 
 require("../db/connnection");
 const User = require('../model/userSchema');
-const Product = require('../model/ProductSchema');
+const Order = require('../model/OrderSchema');
 const authenticate = require('../middleware/authenticate');
 
 router.get('/' , (req,res) => {
@@ -33,20 +33,16 @@ router.get('/checkLoggedUser' , authenticate, (req,res) => {
         return res.status(401).json({message: 'No User Logged in'})
 })
 
-router.get('/profile' , authenticate , (req,res) => {
-    return res.send(req.rootUser);
-})
-
-router.get('/getAllProducts' , (req,res) => {
-    Product.find()
+router.get('/getAllOrders' , (req,res) => {
+    Order.find()
         .then((products) => {
             res.send(products)
         })
         .catch((e)=>{console.log(e)})
 })
 
-router.get('/getProduct/:id' , (req,res) => { 
-    Product.findOne({_id:req.params.id})
+router.get('/getOrder/:id' , (req,res) => { 
+    Order.findOne({_id:req.params.id})
         .then((campaign) => {
             return res.status(200).send(campaign)
         })
@@ -59,11 +55,11 @@ router.post('/logout' , (req,res) => {
     return res.status(200).send('Logged out');
 })
 
-router.delete('/deleteProduct/:id', async (req, res) => {
+router.delete('/deleteOrder/:id', async (req, res) => {
     try {
         const productId = req.params.id;
-        await Product.findByIdAndDelete(productId);
-        res.status(200).json({ message: 'Product deleted successfully' });
+        await Order.findByIdAndDelete(productId);
+        res.status(200).json({ message: 'Order deleted successfully' });
     } catch (error) {
         res.status(500).json({ message: 'Failed to delete product', error });
     }
@@ -159,16 +155,16 @@ router.post('/login' , (req , res) => {
         })
 })
 
-router.post('/addProduct' , (req,res) => {
+router.post('/addOrder' , (req,res) => {
     //adds campaign to the db
-    Product.findOne({username: req.body.username})
-        .then((existingProduct) => {
-            if(existingProduct){
-                return res.status(422).json({message: "Product already Exists"})
+    Order.findOne({username: req.body.username})
+        .then((existingOrder) => {
+            if(existingOrder){
+                return res.status(422).json({message: "Order already Exists"})
             }
             else
             {
-                const newProduct = new Product({
+                const newOrder = new Order({
                     username: req.body.username,
                     name: req.body.name,
                     businessUnit: req.body.businessUnit,
@@ -188,13 +184,13 @@ router.post('/addProduct' , (req,res) => {
                     urgencyLevel: req.body.urgencyLevel
                 });
 
-                newProduct.save()
+                newOrder.save()
                 .then(() => {
-                    res.status(201).json({message: "Product added Succesfully"})
-                    console.log("Product added Succesfully")
+                    res.status(201).json({message: "Order added Succesfully"})
+                    console.log("Order added Succesfully")
 
                 })
-                .catch((e) => res.status(500).json({message: "Failed to add Product"}))
+                .catch((e) => res.status(500).json({message: "Failed to add Order"}))
             }
         
             })
@@ -202,15 +198,13 @@ router.post('/addProduct' , (req,res) => {
 
 })
 
-router.put('/updateProduct' , (req,res) => {
+router.post('/updateOrder' , (req,res) => {
 
-    const { id, ...updatedData} = req.body;
-
-    Product.updateOne({_id: id } , { updatedData })
-    .then((updatedProduct)=>{res.status(201).json({message: "Product updated Succesfully", })})
+    Order.findByIdAndUpdate({_id: req.body._id } , { ...req.body })
+    .then((updatedOrder)=>{res.status(201).json({message: "Order updated Succesfully", })})
     .catch((e)=>{
         console.log(e);
-        res.status(500).json({message: "Failed to update your campaign"});
+        res.status(500).json({message: "Failed to update your Order"});
     })
 })
 

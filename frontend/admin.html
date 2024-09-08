@@ -1,1035 +1,1171 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Admin Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/date-fns@2.30.0/dist/date-fns.min.js"></script>
     <script src="https://code.jquery.com/jquery-2.2.4.js" integrity="sha256-iT6Q9iMJYuQiMWNd9lDyBUStIq/8PuOW33aOqmvFpqI=" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.jquery.js" integrity="sha512-eSeh0V+8U3qoxFnK3KgBsM69hrMOGMBy3CNxq/T4BArsSQJfKVsKb5joMqIPrNMjRQSTl4xG8oJRpgU2o9I7HQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.min.css" integrity="sha512-yVvxUQV0QESBt1SyZbNJMAwyKvFTLMyXSyBHDO4BG5t7k/Lw34tyqlSDlKIrIENIzCl+RVUNjmCPG+V/GMesRw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.jquery.js" integrity="sha512-eSeh0V+8U3qoxFnK3KgBsM69hrMOGMBy3CNxq/T4BArsSQJfKVsKb5joMqIPrNMjRQSTl4xG8oJRpgU2o9I7HQ==" crossorigin="anonymous" referrerpolicy="no-referrer" ></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.min.css" integrity="sha512-yVvxUQV0QESBt1SyZbNJMAwyKvFTLMyXSyBHDO4BG5t7k/Lw34tyqlSDlKIrIENIzCl+RVUNjmCPG+V/GMesRw==" crossorigin="anonymous" referrerpolicy="no-referrer"/>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-            background-color: #f0f0f0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        .container {
-            background-color: white;
-            padding: 20px;
-            border-radius: 5px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            max-width: 1500px;
-            margin: 0 auto;
-            overflow-x: auto;
-        }
-        h2 {
-            color: #333;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-            table-layout: auto;
-        }
-        th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
-            word-wrap: break-word;
-        }
-        th {
-            background-color: #007bff;
-            color: white;
-        }
-        button {
-            background-color: #007bff;
-            color: white;
-            border: none;
-            padding: 5px 10px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-            margin-right: 5px;
-        }
-        button:hover {
-            background-color: #0056b3;
-        }
-        input[type="number"], input[type="date"], select {
-            width: 100%;
-            padding: 5px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
-        input[type="file"], input[type="text"], input[type="email"] {
-            width: 100%;
-            box-sizing: border-box;
-        }
-        .form-container {
-            background-color: #f9f9f9;
-            padding: 20px;
-            border-radius: 5px;
-            margin-bottom: 20px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-        }
-        .form-group {
-            margin-bottom: 15px;
-        }
-        .form-group label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-        .form-group input, .form-group select {
-            width: calc(100% - 10px);
-            padding: 5px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
-        .form-group button {
-            background-color: #007bff;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-            border-radius: 4px;
-        }
-        .form-group button:hover {
-            background-color: #0056b3;
-        }
-        .delete-button {
-            background-color: #dc3545;
-        }
-        .delete-button:hover {
-            background-color: #c82333;
-        }
-        .product-group {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 10px;
-            flex-wrap: wrap;
-        }
-        .product-group select,
-        .product-group input {
-            flex: 1;
-        }
-        .product-group button {
-            flex-shrink: 0;
-            background-color: #dc3545;
-            color: white;
-        }
-        .product-group button:hover {
-            background-color: #c82333;
-        }
-        .product-group input[type="file"] {
-            flex: 2;
-        }
-        .urgent {
-            background-color: red !important;
-            color: white;
-        }
-        .collected {
-    background-color: green;
-    color: white;
-}
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 20px;
+        background-color: #f0f0f0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      .container {
+        background-color: white;
+        padding: 20px;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        max-width: 1500px;
+        margin: 0 auto;
+        overflow-x: auto;
+      }
+      h2 {
+        color: #333;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+        table-layout: auto;
+      }
+      th,
+      td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: left;
+        word-wrap: break-word;
+      }
+      th {
+        background-color: #007bff;
+        color: white;
+      }
+      button {
+        background-color: #007bff;
+        color: white;
+        border: none;
+        padding: 5px 10px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+        margin-right: 5px;
+      }
+      button:hover {
+        background-color: #0056b3;
+      }
+      input[type="number"],
+      input[type="date"],
+      select {
+        width: 100%;
+        padding: 5px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        box-sizing: border-box;
+      }
+      input[type="file"],
+      input[type="text"],
+      input[type="email"] {
+        width: 100%;
+        box-sizing: border-box;
+      }
+      .form-container {
+        background-color: #f9f9f9;
+        padding: 20px;
+        border-radius: 5px;
+        margin-bottom: 20px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+      .form-group {
+        margin-bottom: 15px;
+      }
+      .form-group label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+      }
+      .form-group input,
+      .form-group select {
+        width: calc(100% - 10px);
+        padding: 5px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        box-sizing: border-box;
+      }
+      .form-group button {
+        background-color: #007bff;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+        border-radius: 4px;
+      }
+      .form-group button:hover {
+        background-color: #0056b3;
+      }
+      .delete-button {
+        background-color: #dc3545;
+      }
+      .delete-button:hover {
+        background-color: #c82333;
+      }
+      .product-group {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 10px;
+        flex-wrap: wrap;
+      }
+      .product-group select,
+      .product-group input {
+        flex: 1;
+      }
+      .product-group button {
+        flex-shrink: 0;
+        background-color: #dc3545;
+        color: white;
+      }
+      .product-group button:hover {
+        background-color: #c82333;
+      }
+      .product-group input[type="file"] {
+        flex: 2;
+      }
+      .urgent {
+        background-color: red !important;
+        color: white;
+      }
+      .collected {
+        background-color: green;
+        color: white;
+      }
 
-.not-collected {
-    background-color: orange;
-    color: white;
-}
-.header {
+      .not-collected {
+        background-color: orange;
+        color: white;
+      }
+      .header {
         display: flex;
         justify-content: flex-end;
         align-items: center;
         margin-bottom: 20px;
-    }
+      }
 
-
-        .logout-button {
-            background-color: #dc3545;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-            border-radius: 4px;
-        }
-        .logout-button:hover {
-            background-color: #c82333;
-        }
+      .logout-button {
+        background-color: #dc3545;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+        border-radius: 4px;
+      }
+      .logout-button:hover {
+        background-color: #c82333;
+      }
+      .table-cell{
+        max-width: 250px; 
+        overflow: hidden; 
+        text-overflow: ellipsis; 
+        /* white-space: nowrap;  */
+        padding: 8px;
+        text-align: left;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div class="container">
-        <h2>Admin Dashboard</h2>
-        <div class="header">
-            <button class="logout-button" onclick="logout()">Logout</button>
-        </div>
-        
-        <div class="form-container">
-            <form id="newOrderForm">
-                <div class="form-group">
-                    <label for="newUsername">Pick-Up ID:</label>
-                    <input type="text" id="newUsername">
-                </div>
-                <div class="form-group">
-                    <label for="newName">Name:</label>
-                    <input type="text" id="newName">
-                </div>
-                <div class="form-group">
-                    <label for="newBusinessUnit">Business Unit (BU):</label>
-                    <select id="newBusinessUnit">
-                        <option value="" selected>Select a Business Unit</option>
-                        <option value="B2C">B2C</option>
-                        <option value="B2B">B2B</option>
-                        <option value="B2O">B2O</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="newGender">Gender:</label>
-                    <select id="newGender">
-                        <option value="None" selected>None</option>
-                        <option value="Male">Male</option>
-                        <option value="Female">Female</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="newAge">Age:</label>
-                    <input type="number" id="newAge" min="0">
-                </div>
-                <div class="form-group">
-                    <label for="newPhone">Phone Number:</label>
-                    <input type="text" id="newPhone">
-                </div>
-                <div class="form-group">
-                    <label for="newEmail">Email:</label>
-                    <input type="email" id="newEmail">
-                </div>
-                <div class="form-group">
-                    <label for="newAddress">Address:</label>
-                    <input type="text" id="newAddress">
-                </div>
-                <div class="form-group">
-                    <label for="reference">Reference:</label>
-                    <select id="reference">
-                        <option value="" selected>Select a reference</option>
-                        <option value="google_ads">Google Ads</option>
-                        <option value="instagram">Instagram</option>
-                        <option value="friends_family">Friends and Family</option>
-                        <option value="others">Others</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="zone">Zone:</label>
-                    <select id="zone">
-                        <option value="" selected>Select a Zone</option>
-                        <option value="A">A</option>
-                        <option value="B">B</option>
-                        <option value="C">C</option>
-                        <option value="D">D</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Requested Products:</label>
-                    <div id="requestedProductsContainer">
-                        <div class="product-group">
-                            <select class="product-select chosen-select">
-                                <option value="" selected>Select a product</option>
+      <h2>Admin Dashboard</h2>
+      <div class="header">
+        <button class="logout-button" onclick="logout()">Logout</button>
+      </div>
 
-                    <option value="Server">Server</option>
-<option value="CPU">CPU</option>
-<option value="Monitor">Monitor</option>
-<option value="Keyboard">Keyboard</option>
-<option value="Mouse">Mouse</option>
-<option value="Power Cable">Power Cable</option>
-<option value="VGA Cable">VGA Cable</option>
-<option value="Cable">Cable</option>
-<option value="Networking Cable">Networking Cable</option>
-<option value="Laptop">Laptop</option>
-<option value="Laptop Adaptor">Laptop Adaptor</option>
-<option value="Laptop Battery">Laptop Battery</option>
-<option value="Notebook Computer">Notebook Computer</option>
-<option value="Notepad Computer">Notepad Computer</option>
-<option value="Printer">Printer</option>
-<option value="Cartridge">Cartridge</option>
-<option value="Photocopy Machine">Photocopy Machine</option>
-<option value="Typewriter">Typewriter</option>
-<option value="POS">POS</option>
-<option value="Fax">Fax</option>
-<option value="Telex">Telex</option>
-<option value="Telephone">Telephone</option>
-<option value="Pay Telephone">Pay Telephone</option>
-<option value="Cordless Telephone">Cordless Telephone</option>
-<option value="Mobile">Mobile</option>
-<option value="Answering System">Answering System</option>
-<option value="TV">TV</option>
-<option value="Refrigerator">Refrigerator</option>
-<option value="Washing Machine">Washing Machine</option>
-<option value="AC">AC</option>
-<option value="Fluorescent Lamps">Fluorescent Lamps</option>
-<option value="Bluetooth Device">Bluetooth Device</option>
-<option value="BTS">BTS</option>
-<option value="Tab">Tab</option>
-<option value="Phablet">Phablet</option>
-<option value="Scanner">Scanner</option>
-<option value="Router">Router</option>
-<option value="GPS">GPS</option>
-<option value="UPS">UPS</option>
-<option value="Inverter">Inverter</option>
-<option value="Modem">Modem</option>
-<option value="Storage Device">Storage Device</option>
-<option value="Hard Disk">Hard Disk</option>
-<option value="Display Panel">Display Panel</option>
-<option value="Radio">Radio</option>
-<option value="Set Top Box">Set Top Box</option>
-<option value="Camera">Camera</option>
-<option value="Video Recorder">Video Recorder</option>
-<option value="Hi-fi Recorder">Hi-fi Recorder</option>
-<option value="Amplifier">Amplifier</option>
-<option value="CCTV">CCTV</option>
-<option value="DVR">DVR</option>
-<option value="Projector">Projector</option>
-<option value="Music System">Music System</option>
-<option value="Headphone">Headphone</option>
-<option value="Video Conference Device">Video Conference Device</option>
-<option value="Solar Panel">Solar Panel</option>
-<option value="Luminaires">Luminaires</option>
-<option value="Hallogen Lamps">Hallogen Lamps</option>
-<option value="Sodium Lamps">Sodium Lamps</option>
-<option value="Lights">Lights</option>
-<option value="Digital Camera">Digital Camera</option>
-<option value="Large Cooling Appliance">Large Cooling Appliance</option>
-<option value="Freezer">Freezer</option>
-<option value="Food Storage Refrigerator">Food Storage Refrigerator</option>
-<option value="Clothes Dryer">Clothes Dryer</option>
-<option value="Dishwasher">Dishwasher</option>
-<option value="Electric Cooker">Electric Cooker</option>
-<option value="Electric Stove">Electric Stove</option>
-<option value="Electric Hot plates">Electric Hot plates</option>
-<option value="Oven">Oven</option>
-<option value="Food Processors">Food Processors</option>
-<option value="Electric Heater">Electric Heater</option>
-<option value="Radiator">Radiator</option>
-<option value="Other Large Heaters">Other Large Heaters</option>
-<option value="Fans">Fans</option>
-<option value="Chimney">Chimney</option>
-<option value="Vaccuum Cleaner">Vaccuum Cleaner</option>
-<option value="Carpet Sweeper">Carpet Sweeper</option>
-<option value="Other Cleaning Appliance">Other Cleaning Appliance</option>
-<option value="Textile Machines">Textile Machines</option>
-<option value="Iron">Iron</option>
-<option value="Grinders">Grinders</option>
-<option value="Smoke Detector">Smoke Detector</option>
-<option value="Heating Regulator">Heating Regulator</option>
-<option value="Thermostat">Thermostat</option>
-<option value="Hot drinks dispenser">Hot drinks dispenser</option>
-<option value="Cold drinks dispenser">Cold drinks dispenser</option>
-<option value="Vending Machine">Vending Machine</option>
-<option value="ATM">ATM</option>
-<option value="Other Vending Machine">Other Vending Machine</option>
-<option value="Air Purifier">Air Purifier</option>
-<option value="Hair Dryer">Hair Dryer</option>
-<option value="Electric Shaver">Electric Shaver</option>
-<option value="Electric Kettle">Electric Kettle</option>
-<option value="Display Board">Display Board</option>
-<option value="Drills">Drills</option>
-<option value="Saw">Saw</option>
-<option value="Sewing Machine">Sewing Machine</option>
-<option value="Carpentry Tools">Carpentry Tools</option>
-<option value="Other Carpentry Tools">Other Carpentry Tools</option>
-<option value="Fabrication Tools">Fabrication Tools</option>
-<option value="Spraying Machines">Spraying Machines</option>
-<option value="Gardening Tools">Gardening Tools</option>
-<option value="Electric Toys">Electric Toys</option>
-<option value="Handheld Video Games">Handheld Video Games</option>
-<option value="Video Games">Video Games</option>
-<option value="Other Video Games">Other Video Games</option>
-<option value="Sports Equipments">Sports Equipments</option>
-<option value="Slot Machines">Slot Machines</option>
-<option value="Radiotherapy Devices">Radiotherapy Devices</option>
-<option value="Cardiology Devices">Cardiology Devices</option>
-<option value="Pulmonary Cardiology Ventilators">Pulmonary Cardiology Ventilators</option>
-<option value="Pulmonary Anaesthesia Ventilators">Pulmonary Anaesthesia Ventilators</option>
-<option value="Nuclear Medicine Equipment">Nuclear Medicine Equipment</option>
-<option value="In Vitro Diagnosis Equipment">In Vitro Diagnosis Equipment</option>
-<option value="Analysers">Analysers</option>
-<option value="MRI Machine">MRI Machine</option>
-<option value="Fertilization Test Equipment">Fertilization Test Equipment</option>
-<option value="Other Medical Equipment">Other Medical Equipment</option>
-<option value="Gas analyser">Gas analyser</option>
-<option value="Lab Equipment">Lab Equipment</option>
-<option value="Aluminium">Aluminium</option>
-<option value="Remote">Remote</option>
-<option value="Power Bank">Power Bank</option>
-<option value="UPS Battery">UPS Battery</option>
-<option value="Li-ion Battery">Li-ion Battery</option>
-<option value="Cell Battery">Cell Battery</option>
-<option value="Brass">Brass</option>
-<option value="Capacitor">Capacitor</option>
-<option value="Casting">Casting</option>
-<option value="Ceramic">Ceramic</option>
-<option value="Charger">Charger</option>
-<option value="Choke">Choke</option>
-<option value="Compressor">Compressor</option>
-<option value="Condenser">Condenser</option>
-<option value="Copper">Copper</option>
-<option value="CPU Cabinet">CPU Cabinet</option>
-<option value="DVD Drive">DVD Drive</option>
-<option value="Glass">Glass</option>
-<option value="Magnet">Magnet</option>
-<option value="Metal Steel">Metal Steel</option>
-<option value="Stainless Steel">Stainless Steel</option>
-<option value="Motor">Motor</option>
-<option value="Oil">Oil</option>
-<option value="Paper">Paper</option>
-<option value="PCB">PCB</option>
-<option value="Plastic">Plastic</option>
-<option value="Processor">Processor</option>
-<option value="RAM">RAM</option>
-<option value="Rubber">Rubber</option>
-<option value="SMPS">SMPS</option>
-<option value="Transformer">Transformer</option>
-<option value="Wood">Wood</option>
-<option value="Thermocol">Thermocol</option>
-<option value="Antique">Antique</option>
-<option value="Mix Ewaste">Mix Ewaste</option>
-<option value="Other Home Appliance">Other Home Appliance</option>
-<option value="Mylar">Mylar</option>
-<option value="Speaker">Speaker</option>
-<option value="Transistor">Transistor</option>
-<option value="CD">CD</option>
-<option value="Cassette">Cassette</option>
-<option value="Heatsink">Heatsink</option>
-<option value="Electrical Scrap">Electrical Scrap</option>
-<option value="MCB">MCB</option>
-<option value="Calculator">Calculator</option>
-<option value="Spikeguard">Spikeguard</option>
-<option value="Thinclient">Thinclient</option>
-<option value="Laptop Keyboard">Laptop Keyboard</option>
-<option value="Webcam">Webcam</option>
-<option value="DVD Player">DVD Player</option>
-<option value="Ipod">Ipod</option>
-<option value="Water Purifier">Water Purifier</option>
-<option value="Networking Device">Networking Device</option>
-<option value="Geyser">Geyser</option>
-<option value="Weighing Scale">Weighing Scale</option>
-<option value="Beauty Products">Beauty Products</option>
-<option value="Watch">Watch</option>
-<option value="Biometric Device">Biometric Device</option>
-<option value="Switch">Switch</option>
-<option value="Paper Shredder">Paper Shredder</option>
-<option value="Mosquito Racket">Mosquito Racket</option>
-<option value="Docking Station">Docking Station</option>
-<option value="Fire Alarm">Fire Alarm</option>
-<option value="Fire Extinguisher">Fire Extinguisher</option>
-<option value="Cash Machine">Cash Machine</option>
-<option value="Walkie Talkie">Walkie Talkie</option>
-<option value="Fiber Optic Cable">Fiber Optic Cable</option>
-<option value="Screw">Screw</option>
-<option value="Coffee Machine">Coffee Machine</option>
-<option value="Copper Cable">Copper Cable</option>
-<option value="Aluminium Cable">Aluminium Cable</option>
-<option value="Electric Vehicles">Electric Vehicles</option>
-                            </select>
-                            <input type="number" class="product-quantity" placeholder="Quantity" min="1">
-                            <button type="button" onclick="removeProduct(this)">Remove</button>
-                        </div>
-                    </div>
-                    <button type="button" onclick="addProduct()">Add Another Product</button>
-                </div>
-                <div class="form-group">
-                    <label for="poaMode">POA/Mode:</label>
-                    <select id="poaMode">
-                        <option value="" selected>Select POA/Mode</option>
-                        <option value="EV">EV</option>
-                        <option value="Tempo">Tempo</option>
-                        <option value="Train">Train</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="productFiles">Upload Product Files:</label>
-                    <input type="file" id="productFiles" multiple>
-                </div>
-                <div class="form-group">
-                    <label for="uploadPicture">Upload Picture:</label>
-                    <input type="file" id="uploadPicture" multiple>
-                </div>
-                <div class="form-group">
-                    <label for="newCertificate">Upload Certificate:</label>
-                    <input type="file" id="newCertificate">
-                </div>
-                <div class="form-group">
-                    <label for="requestStatus">Request Status:</label>
-                    <select id="requestStatus">
-                        <option value="" selected>Select Status</option>
-                        <option value="Pending">Pending</option>
-                        <option value="Approved">Approved</option>
-                        <option value="Rejected">Rejected</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="urgencyLevel">Urgency Level:</label>
-                    <select id="urgencyLevel">
-                        <option value="" selected>Select Urgency Level</option>
-                        <option value="Yes">Yes</option>
-                        <option value="No">No</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <button type="button" id="submitOrderBtn" onclick="addOrder()">
-                        <i id="spinner" class="fas fa-spinner fa-spin" style="display: none; margin-right: 8px;"></i>
-                        <span id="buttonText">Submit Order</span>
-                    </button>
-                </div>
-                <div class="header">
-                    <button class="logout-button" onclick="downloadCSV()">Download CSV</button> <!-- New Download CSV Button -->
-                </div>
-            </form>
-        </div>
-        <table id="ordersTable">
-            <thead>
-                <tr>
-                    <th>Username</th>
-                    <th>Name</th>
-                    <th>BU</th>
-                    <th>Gender</th>
-                    <th>Age</th>
-                    <th>Phone</th>
-                    <th>Email</th>
-                    <th>Address</th>
-                    <th>Zone</th>
-                    <th>Requested Products</th>
-                    <th>POA/Mode</th>
-                    <th>Product Files</th>
-                    <th>Picture</th>
-                    <th>Certificate</th>
-                    <th>Request Status</th>
-                    <th>Urgency Level</th>
-                    <th>Collection Status</th>
-                    <th>Allocated Pickup Date</th>
-                    <th>Actual Pickup Date</th>
-                    <th>Recieved Products</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- Data will be inserted here -->
-            </tbody>
-        </table>
+      <div class="form-container">
+        <form id="newOrderForm">
+          <div class="form-group">
+            <label for="newUsername">Pick-Up ID:</label>
+            <input type="text" id="newUsername" />
+          </div>
+          <div class="form-group">
+            <label for="newName">Name:</label>
+            <input type="text" id="newName" />
+          </div>
+          <div class="form-group">
+            <label for="newBusinessUnit">Business Unit (BU):</label>
+            <select id="newBusinessUnit">
+              <option value="" selected>Select a Business Unit</option>
+              <option value="B2C">B2C</option>
+              <option value="B2B">B2B</option>
+              <option value="B2O">B2O</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="newGender">Gender:</label>
+            <select id="newGender">
+              <option value="None" selected>None</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="newAge">Age:</label>
+            <input type="number" id="newAge" min="0" />
+          </div>
+          <div class="form-group">
+            <label for="newPhone">Phone Number:</label>
+            <input type="text" id="newPhone" />
+          </div>
+          <div class="form-group">
+            <label for="newEmail">Email:</label>
+            <input type="email" id="newEmail" />
+          </div>
+          <div class="form-group">
+            <label for="newAddress">Address:</label>
+            <input type="text" id="newAddress" />
+          </div>
+          <div class="form-group">
+            <label for="reference">Reference:</label>
+            <select id="reference">
+              <option value="" selected>Select a reference</option>
+              <option value="google_ads">Google Ads</option>
+              <option value="instagram">Instagram</option>
+              <option value="friends_family">Friends and Family</option>
+              <option value="others">Others</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="zone">Zone:</label>
+            <select id="zone">
+              <option value="" selected>Select a Zone</option>
+              <option value="A">A</option>
+              <option value="B">B</option>
+              <option value="C">C</option>
+              <option value="D">D</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Requested Products:</label>
+            <div id="requestedProductsContainer">
+              <div class="product-group">
+                <select class="product-select chosen-select">
+                  <option value="" selected>Select a product</option>
+
+                  <option value="Server">Server</option>
+                  <option value="CPU">CPU</option>
+                  <option value="Monitor">Monitor</option>
+                  <option value="Keyboard">Keyboard</option>
+                  <option value="Mouse">Mouse</option>
+                  <option value="Power Cable">Power Cable</option>
+                  <option value="VGA Cable">VGA Cable</option>
+                  <option value="Cable">Cable</option>
+                  <option value="Networking Cable">Networking Cable</option>
+                  <option value="Laptop">Laptop</option>
+                  <option value="Laptop Adaptor">Laptop Adaptor</option>
+                  <option value="Laptop Battery">Laptop Battery</option>
+                  <option value="Notebook Computer">Notebook Computer</option>
+                  <option value="Notepad Computer">Notepad Computer</option>
+                  <option value="Printer">Printer</option>
+                  <option value="Cartridge">Cartridge</option>
+                  <option value="Photocopy Machine">Photocopy Machine</option>
+                  <option value="Typewriter">Typewriter</option>
+                  <option value="POS">POS</option>
+                  <option value="Fax">Fax</option>
+                  <option value="Telex">Telex</option>
+                  <option value="Telephone">Telephone</option>
+                  <option value="Pay Telephone">Pay Telephone</option>
+                  <option value="Cordless Telephone">Cordless Telephone</option>
+                  <option value="Mobile">Mobile</option>
+                  <option value="Answering System">Answering System</option>
+                  <option value="TV">TV</option>
+                  <option value="Refrigerator">Refrigerator</option>
+                  <option value="Washing Machine">Washing Machine</option>
+                  <option value="AC">AC</option>
+                  <option value="Fluorescent Lamps">Fluorescent Lamps</option>
+                  <option value="Bluetooth Device">Bluetooth Device</option>
+                  <option value="BTS">BTS</option>
+                  <option value="Tab">Tab</option>
+                  <option value="Phablet">Phablet</option>
+                  <option value="Scanner">Scanner</option>
+                  <option value="Router">Router</option>
+                  <option value="GPS">GPS</option>
+                  <option value="UPS">UPS</option>
+                  <option value="Inverter">Inverter</option>
+                  <option value="Modem">Modem</option>
+                  <option value="Storage Device">Storage Device</option>
+                  <option value="Hard Disk">Hard Disk</option>
+                  <option value="Display Panel">Display Panel</option>
+                  <option value="Radio">Radio</option>
+                  <option value="Set Top Box">Set Top Box</option>
+                  <option value="Camera">Camera</option>
+                  <option value="Video Recorder">Video Recorder</option>
+                  <option value="Hi-fi Recorder">Hi-fi Recorder</option>
+                  <option value="Amplifier">Amplifier</option>
+                  <option value="CCTV">CCTV</option>
+                  <option value="DVR">DVR</option>
+                  <option value="Projector">Projector</option>
+                  <option value="Music System">Music System</option>
+                  <option value="Headphone">Headphone</option>
+                  <option value="Video Conference Device">
+                    Video Conference Device
+                  </option>
+                  <option value="Solar Panel">Solar Panel</option>
+                  <option value="Luminaires">Luminaires</option>
+                  <option value="Hallogen Lamps">Hallogen Lamps</option>
+                  <option value="Sodium Lamps">Sodium Lamps</option>
+                  <option value="Lights">Lights</option>
+                  <option value="Digital Camera">Digital Camera</option>
+                  <option value="Large Cooling Appliance">
+                    Large Cooling Appliance
+                  </option>
+                  <option value="Freezer">Freezer</option>
+                  <option value="Food Storage Refrigerator">
+                    Food Storage Refrigerator
+                  </option>
+                  <option value="Clothes Dryer">Clothes Dryer</option>
+                  <option value="Dishwasher">Dishwasher</option>
+                  <option value="Electric Cooker">Electric Cooker</option>
+                  <option value="Electric Stove">Electric Stove</option>
+                  <option value="Electric Hot plates">
+                    Electric Hot plates
+                  </option>
+                  <option value="Oven">Oven</option>
+                  <option value="Food Processors">Food Processors</option>
+                  <option value="Electric Heater">Electric Heater</option>
+                  <option value="Radiator">Radiator</option>
+                  <option value="Other Large Heaters">
+                    Other Large Heaters
+                  </option>
+                  <option value="Fans">Fans</option>
+                  <option value="Chimney">Chimney</option>
+                  <option value="Vaccuum Cleaner">Vaccuum Cleaner</option>
+                  <option value="Carpet Sweeper">Carpet Sweeper</option>
+                  <option value="Other Cleaning Appliance">
+                    Other Cleaning Appliance
+                  </option>
+                  <option value="Textile Machines">Textile Machines</option>
+                  <option value="Iron">Iron</option>
+                  <option value="Grinders">Grinders</option>
+                  <option value="Smoke Detector">Smoke Detector</option>
+                  <option value="Heating Regulator">Heating Regulator</option>
+                  <option value="Thermostat">Thermostat</option>
+                  <option value="Hot drinks dispenser">
+                    Hot drinks dispenser
+                  </option>
+                  <option value="Cold drinks dispenser">
+                    Cold drinks dispenser
+                  </option>
+                  <option value="Vending Machine">Vending Machine</option>
+                  <option value="ATM">ATM</option>
+                  <option value="Other Vending Machine">
+                    Other Vending Machine
+                  </option>
+                  <option value="Air Purifier">Air Purifier</option>
+                  <option value="Hair Dryer">Hair Dryer</option>
+                  <option value="Electric Shaver">Electric Shaver</option>
+                  <option value="Electric Kettle">Electric Kettle</option>
+                  <option value="Display Board">Display Board</option>
+                  <option value="Drills">Drills</option>
+                  <option value="Saw">Saw</option>
+                  <option value="Sewing Machine">Sewing Machine</option>
+                  <option value="Carpentry Tools">Carpentry Tools</option>
+                  <option value="Other Carpentry Tools">
+                    Other Carpentry Tools
+                  </option>
+                  <option value="Fabrication Tools">Fabrication Tools</option>
+                  <option value="Spraying Machines">Spraying Machines</option>
+                  <option value="Gardening Tools">Gardening Tools</option>
+                  <option value="Electric Toys">Electric Toys</option>
+                  <option value="Handheld Video Games">
+                    Handheld Video Games
+                  </option>
+                  <option value="Video Games">Video Games</option>
+                  <option value="Other Video Games">Other Video Games</option>
+                  <option value="Sports Equipments">Sports Equipments</option>
+                  <option value="Slot Machines">Slot Machines</option>
+                  <option value="Radiotherapy Devices">
+                    Radiotherapy Devices
+                  </option>
+                  <option value="Cardiology Devices">Cardiology Devices</option>
+                  <option value="Pulmonary Cardiology Ventilators">
+                    Pulmonary Cardiology Ventilators
+                  </option>
+                  <option value="Pulmonary Anaesthesia Ventilators">
+                    Pulmonary Anaesthesia Ventilators
+                  </option>
+                  <option value="Nuclear Medicine Equipment">
+                    Nuclear Medicine Equipment
+                  </option>
+                  <option value="In Vitro Diagnosis Equipment">
+                    In Vitro Diagnosis Equipment
+                  </option>
+                  <option value="Analysers">Analysers</option>
+                  <option value="MRI Machine">MRI Machine</option>
+                  <option value="Fertilization Test Equipment">
+                    Fertilization Test Equipment
+                  </option>
+                  <option value="Other Medical Equipment">
+                    Other Medical Equipment
+                  </option>
+                  <option value="Gas analyser">Gas analyser</option>
+                  <option value="Lab Equipment">Lab Equipment</option>
+                  <option value="Aluminium">Aluminium</option>
+                  <option value="Remote">Remote</option>
+                  <option value="Power Bank">Power Bank</option>
+                  <option value="UPS Battery">UPS Battery</option>
+                  <option value="Li-ion Battery">Li-ion Battery</option>
+                  <option value="Cell Battery">Cell Battery</option>
+                  <option value="Brass">Brass</option>
+                  <option value="Capacitor">Capacitor</option>
+                  <option value="Casting">Casting</option>
+                  <option value="Ceramic">Ceramic</option>
+                  <option value="Charger">Charger</option>
+                  <option value="Choke">Choke</option>
+                  <option value="Compressor">Compressor</option>
+                  <option value="Condenser">Condenser</option>
+                  <option value="Copper">Copper</option>
+                  <option value="CPU Cabinet">CPU Cabinet</option>
+                  <option value="DVD Drive">DVD Drive</option>
+                  <option value="Glass">Glass</option>
+                  <option value="Magnet">Magnet</option>
+                  <option value="Metal Steel">Metal Steel</option>
+                  <option value="Stainless Steel">Stainless Steel</option>
+                  <option value="Motor">Motor</option>
+                  <option value="Oil">Oil</option>
+                  <option value="Paper">Paper</option>
+                  <option value="PCB">PCB</option>
+                  <option value="Plastic">Plastic</option>
+                  <option value="Processor">Processor</option>
+                  <option value="RAM">RAM</option>
+                  <option value="Rubber">Rubber</option>
+                  <option value="SMPS">SMPS</option>
+                  <option value="Transformer">Transformer</option>
+                  <option value="Wood">Wood</option>
+                  <option value="Thermocol">Thermocol</option>
+                  <option value="Antique">Antique</option>
+                  <option value="Mix Ewaste">Mix Ewaste</option>
+                  <option value="Other Home Appliance">
+                    Other Home Appliance
+                  </option>
+                  <option value="Mylar">Mylar</option>
+                  <option value="Speaker">Speaker</option>
+                  <option value="Transistor">Transistor</option>
+                  <option value="CD">CD</option>
+                  <option value="Cassette">Cassette</option>
+                  <option value="Heatsink">Heatsink</option>
+                  <option value="Electrical Scrap">Electrical Scrap</option>
+                  <option value="MCB">MCB</option>
+                  <option value="Calculator">Calculator</option>
+                  <option value="Spikeguard">Spikeguard</option>
+                  <option value="Thinclient">Thinclient</option>
+                  <option value="Laptop Keyboard">Laptop Keyboard</option>
+                  <option value="Webcam">Webcam</option>
+                  <option value="DVD Player">DVD Player</option>
+                  <option value="Ipod">Ipod</option>
+                  <option value="Water Purifier">Water Purifier</option>
+                  <option value="Networking Device">Networking Device</option>
+                  <option value="Geyser">Geyser</option>
+                  <option value="Weighing Scale">Weighing Scale</option>
+                  <option value="Beauty Products">Beauty Products</option>
+                  <option value="Watch">Watch</option>
+                  <option value="Biometric Device">Biometric Device</option>
+                  <option value="Switch">Switch</option>
+                  <option value="Paper Shredder">Paper Shredder</option>
+                  <option value="Mosquito Racket">Mosquito Racket</option>
+                  <option value="Docking Station">Docking Station</option>
+                  <option value="Fire Alarm">Fire Alarm</option>
+                  <option value="Fire Extinguisher">Fire Extinguisher</option>
+                  <option value="Cash Machine">Cash Machine</option>
+                  <option value="Walkie Talkie">Walkie Talkie</option>
+                  <option value="Fiber Optic Cable">Fiber Optic Cable</option>
+                  <option value="Screw">Screw</option>
+                  <option value="Coffee Machine">Coffee Machine</option>
+                  <option value="Copper Cable">Copper Cable</option>
+                  <option value="Aluminium Cable">Aluminium Cable</option>
+                  <option value="Electric Vehicles">Electric Vehicles</option>
+                </select>
+                <input
+                  type="number"
+                  class="product-quantity"
+                  placeholder="Quantity"
+                  min="1"
+                />
+                <button type="button" onclick="removeProduct(this)">
+                  Remove
+                </button>
+              </div>
+            </div>
+            <button type="button" onclick="addProduct()">
+              Add Another Product
+            </button>
+          </div>
+          <div class="form-group">
+            <label for="poaMode">POA/Mode:</label>
+            <select id="poaMode">
+              <option value="" selected>Select POA/Mode</option>
+              <option value="EV">EV</option>
+              <option value="Tempo">Tempo</option>
+              <option value="Train">Train</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="productFiles">Upload Product Files:</label>
+            <input type="file" id="productFiles" multiple />
+          </div>
+          <div class="form-group">
+            <label for="uploadPicture">Upload Picture:</label>
+            <input type="file" id="uploadPicture" multiple />
+          </div>
+          <div class="form-group">
+            <label for="newCertificate">Upload Certificate:</label>
+            <input type="file" id="newCertificate" />
+          </div>
+          <div class="form-group">
+            <label for="requestStatus">Request Status:</label>
+            <select id="requestStatus">
+              <option value="" selected>Select Status</option>
+              <option value="Pending">Pending</option>
+              <option value="Approved">Approved</option>
+              <option value="Rejected">Rejected</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="urgencyLevel">Urgency Level:</label>
+            <select id="urgencyLevel">
+              <option value="" selected>Select Urgency Level</option>
+              <option value="Yes">Yes</option>
+              <option value="No">No</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <button type="button" id="submitOrderBtn" onclick="addOrder()">
+              <i
+                id="spinner"
+                class="fas fa-spinner fa-spin"
+                style="display: none; margin-right: 8px"
+              ></i>
+              <span id="buttonText">Submit Order</span>
+            </button>
+          </div>
+          <div class="header">
+            <button class="logout-button" onclick="downloadCSV()">
+              Download CSV
+            </button>
+            <!-- New Download CSV Button -->
+          </div>
+        </form>
+      </div>
+      <table id="ordersTable">
+        <thead>
+          <tr>
+            <th>Username</th>
+            <th>Name</th>
+            <th>BU</th>
+            <th>Gender</th>
+            <th>Age</th>
+            <th>Phone</th>
+            <th>Email</th>
+            <th>Address</th>
+            <th>Zone</th>
+            <th>Requested Products</th>
+            <th>POA/Mode</th>
+            <th>Product Files</th>
+            <th>Picture</th>
+            <th>Certificate</th>
+            <th>Request Status</th>
+            <th>Urgency Level</th>
+            <th>Collection Status</th>
+            <th>Allocated Pickup Date</th>
+            <th>Actual Pickup Date</th>
+            <th>Recieved Products</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Data will be inserted here -->
+        </tbody>
+      </table>
     </div>
 
     <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        loadOrders();
+        $(".chosen-select").chosen();
+      });
+
       function downloadCSV() {
-    // Get the table
-    var table = document.getElementById("ordersTable");
-    
-    // Extract the data from the table
-    var data = [];
-    for (var i = 0; i < table.rows.length; i++) {
-        var row = table.rows[i];
-        var rowData = [];
-        for (var j = 0; j < row.cells.length; j++) {
-            rowData.push(row.cells[j].innerText);
-        }
-        data.push(rowData.join(","));
-    }
-    
-    // Combine the data into a CSV string
-    var csvContent = data.join("\n");
-    
-    // Create a Blob with the CSV content
-    var blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    
-    // Create a link element to trigger the download
-    var link = document.createElement("a");
-    if (link.download !== undefined) {
-        var url = URL.createObjectURL(blob);
-        link.setAttribute("href", url);
-        link.setAttribute("download", "orders_data.csv");
-        link.style.visibility = 'hidden';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-    }
-}
-        function logout() {
-            fetch('http://localhost:5000/logout', { 
-                method: 'POST',
-                credentials: 'include',
-            })
-            .then(response => {
-                if (response.ok) {
-                    localStorage.clear();
-                    alert("Logged out successfully!");
-                    window.location.href = 'index.html';
+        var table = document.getElementById("ordersTable");
+        var data = [];
+        
+        for (var i = 0; i < table.rows.length; i++) {
+            var row = table.rows[i];
+            var rowData = [];
+            
+            for (var j = 0; j < row.cells.length-1; j++) {
+                const cell = row.cells[j];
+
+                if (cell.querySelector('a')) {
+                    // Handle cells containing links
+                    const links = Array.from(cell.querySelectorAll('a')).map(link => link.href);
+                    rowData.push(`"${links.join("\n")}"`); // Join multiple links with a separator
+                } else if (cell.querySelector('li')) {
+                    // Handle cells containing list items
+                    const listItems = Array.from(cell.querySelectorAll('li')).map(li => li.innerText);
+                    rowData.push(`"${listItems.join(", ")}"`); // Join multiple list items with a comma, ensure they stay in the same cell
                 } else {
-                    alert("Failed to log out. Please try again.");
+                    // Handle regular text or empty cells
+                    rowData.push(`"${cell.innerText.trim()}"`); // Use double quotes for consistent CSV format
                 }
-            })
-            .catch(error => {
-                console.error('Error logging out:', error);
-                alert("An error occurred while logging out.");
-            });
+            }
+            
+            data.push(rowData.join(",")); // Join each row's data with commas
         }
 
-        function addProduct() {
-            var productGroup = document.createElement('div');
-            productGroup.className = 'product-group';
-            productGroup.innerHTML = `
+        var csvContent = data.join("\n");
+        var blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+
+        var link = document.createElement("a");
+        if (link.download !== undefined) {
+            var url = URL.createObjectURL(blob);
+            link.setAttribute("href", url);
+            link.setAttribute("download", "orders_data.csv");
+            link.style.visibility = "hidden";
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+      }
+
+
+      function logout() {
+        fetch("http://localhost:5000/logout", {
+          method: "POST",
+          credentials: "include",
+        })
+          .then((response) => {
+            if (response.ok) {
+              localStorage.clear();
+              alert("Logged out successfully!");
+              window.location.href = "index.html";
+            } else {
+              alert("Failed to log out. Please try again.");
+            }
+          })
+          .catch((error) => {
+            console.error("Error logging out:", error);
+            alert("An error occurred while logging out.");
+          });
+      }
+
+      function addProduct() {
+        var productGroup = document.createElement("div");
+        productGroup.className = "product-group";
+        productGroup.innerHTML = `
                 <select class="product-select chosen-select">
                     <option value="Server">Server</option>
-<option value="CPU">CPU</option>
-<option value="Monitor">Monitor</option>
-<option value="Keyboard">Keyboard</option>
-<option value="Mouse">Mouse</option>
-<option value="Power Cable">Power Cable</option>
-<option value="VGA Cable">VGA Cable</option>
-<option value="Cable">Cable</option>
-<option value="Networking Cable">Networking Cable</option>
-<option value="Laptop">Laptop</option>
-<option value="Laptop Adaptor">Laptop Adaptor</option>
-<option value="Laptop Battery">Laptop Battery</option>
-<option value="Notebook Computer">Notebook Computer</option>
-<option value="Notepad Computer">Notepad Computer</option>
-<option value="Printer">Printer</option>
-<option value="Cartridge">Cartridge</option>
-<option value="Photocopy Machine">Photocopy Machine</option>
-<option value="Typewriter">Typewriter</option>
-<option value="POS">POS</option>
-<option value="Fax">Fax</option>
-<option value="Telex">Telex</option>
-<option value="Telephone">Telephone</option>
-<option value="Pay Telephone">Pay Telephone</option>
-<option value="Cordless Telephone">Cordless Telephone</option>
-<option value="Mobile">Mobile</option>
-<option value="Answering System">Answering System</option>
-<option value="TV">TV</option>
-<option value="Refrigerator">Refrigerator</option>
-<option value="Washing Machine">Washing Machine</option>
-<option value="AC">AC</option>
-<option value="Fluorescent Lamps">Fluorescent Lamps</option>
-<option value="Bluetooth Device">Bluetooth Device</option>
-<option value="BTS">BTS</option>
-<option value="Tab">Tab</option>
-<option value="Phablet">Phablet</option>
-<option value="Scanner">Scanner</option>
-<option value="Router">Router</option>
-<option value="GPS">GPS</option>
-<option value="UPS">UPS</option>
-<option value="Inverter">Inverter</option>
-<option value="Modem">Modem</option>
-<option value="Storage Device">Storage Device</option>
-<option value="Hard Disk">Hard Disk</option>
-<option value="Display Panel">Display Panel</option>
-<option value="Radio">Radio</option>
-<option value="Set Top Box">Set Top Box</option>
-<option value="Camera">Camera</option>
-<option value="Video Recorder">Video Recorder</option>
-<option value="Hi-fi Recorder">Hi-fi Recorder</option>
-<option value="Amplifier">Amplifier</option>
-<option value="CCTV">CCTV</option>
-<option value="DVR">DVR</option>
-<option value="Projector">Projector</option>
-<option value="Music System">Music System</option>
-<option value="Headphone">Headphone</option>
-<option value="Video Conference Device">Video Conference Device</option>
-<option value="Solar Panel">Solar Panel</option>
-<option value="Luminaires">Luminaires</option>
-<option value="Hallogen Lamps">Hallogen Lamps</option>
-<option value="Sodium Lamps">Sodium Lamps</option>
-<option value="Lights">Lights</option>
-<option value="Digital Camera">Digital Camera</option>
-<option value="Large Cooling Appliance">Large Cooling Appliance</option>
-<option value="Freezer">Freezer</option>
-<option value="Food Storage Refrigerator">Food Storage Refrigerator</option>
-<option value="Clothes Dryer">Clothes Dryer</option>
-<option value="Dishwasher">Dishwasher</option>
-<option value="Electric Cooker">Electric Cooker</option>
-<option value="Electric Stove">Electric Stove</option>
-<option value="Electric Hot plates">Electric Hot plates</option>
-<option value="Oven">Oven</option>
-<option value="Food Processors">Food Processors</option>
-<option value="Electric Heater">Electric Heater</option>
-<option value="Radiator">Radiator</option>
-<option value="Other Large Heaters">Other Large Heaters</option>
-<option value="Fans">Fans</option>
-<option value="Chimney">Chimney</option>
-<option value="Vaccuum Cleaner">Vaccuum Cleaner</option>
-<option value="Carpet Sweeper">Carpet Sweeper</option>
-<option value="Other Cleaning Appliance">Other Cleaning Appliance</option>
-<option value="Textile Machines">Textile Machines</option>
-<option value="Iron">Iron</option>
-<option value="Grinders">Grinders</option>
-<option value="Smoke Detector">Smoke Detector</option>
-<option value="Heating Regulator">Heating Regulator</option>
-<option value="Thermostat">Thermostat</option>
-<option value="Hot drinks dispenser">Hot drinks dispenser</option>
-<option value="Cold drinks dispenser">Cold drinks dispenser</option>
-<option value="Vending Machine">Vending Machine</option>
-<option value="ATM">ATM</option>
-<option value="Other Vending Machine">Other Vending Machine</option>
-<option value="Air Purifier">Air Purifier</option>
-<option value="Hair Dryer">Hair Dryer</option>
-<option value="Electric Shaver">Electric Shaver</option>
-<option value="Electric Kettle">Electric Kettle</option>
-<option value="Display Board">Display Board</option>
-<option value="Drills">Drills</option>
-<option value="Saw">Saw</option>
-<option value="Sewing Machine">Sewing Machine</option>
-<option value="Carpentry Tools">Carpentry Tools</option>
-<option value="Other Carpentry Tools">Other Carpentry Tools</option>
-<option value="Fabrication Tools">Fabrication Tools</option>
-<option value="Spraying Machines">Spraying Machines</option>
-<option value="Gardening Tools">Gardening Tools</option>
-<option value="Electric Toys">Electric Toys</option>
-<option value="Handheld Video Games">Handheld Video Games</option>
-<option value="Video Games">Video Games</option>
-<option value="Other Video Games">Other Video Games</option>
-<option value="Sports Equipments">Sports Equipments</option>
-<option value="Slot Machines">Slot Machines</option>
-<option value="Radiotherapy Devices">Radiotherapy Devices</option>
-<option value="Cardiology Devices">Cardiology Devices</option>
-<option value="Pulmonary Cardiology Ventilators">Pulmonary Cardiology Ventilators</option>
-<option value="Pulmonary Anaesthesia Ventilators">Pulmonary Anaesthesia Ventilators</option>
-<option value="Nuclear Medicine Equipment">Nuclear Medicine Equipment</option>
-<option value="In Vitro Diagnosis Equipment">In Vitro Diagnosis Equipment</option>
-<option value="Analysers">Analysers</option>
-<option value="MRI Machine">MRI Machine</option>
-<option value="Fertilization Test Equipment">Fertilization Test Equipment</option>
-<option value="Other Medical Equipment">Other Medical Equipment</option>
-<option value="Gas analyser">Gas analyser</option>
-<option value="Lab Equipment">Lab Equipment</option>
-<option value="Aluminium">Aluminium</option>
-<option value="Remote">Remote</option>
-<option value="Power Bank">Power Bank</option>
-<option value="UPS Battery">UPS Battery</option>
-<option value="Li-ion Battery">Li-ion Battery</option>
-<option value="Cell Battery">Cell Battery</option>
-<option value="Brass">Brass</option>
-<option value="Capacitor">Capacitor</option>
-<option value="Casting">Casting</option>
-<option value="Ceramic">Ceramic</option>
-<option value="Charger">Charger</option>
-<option value="Choke">Choke</option>
-<option value="Compressor">Compressor</option>
-<option value="Condenser">Condenser</option>
-<option value="Copper">Copper</option>
-<option value="CPU Cabinet">CPU Cabinet</option>
-<option value="DVD Drive">DVD Drive</option>
-<option value="Glass">Glass</option>
-<option value="Magnet">Magnet</option>
-<option value="Metal Steel">Metal Steel</option>
-<option value="Stainless Steel">Stainless Steel</option>
-<option value="Motor">Motor</option>
-<option value="Oil">Oil</option>
-<option value="Paper">Paper</option>
-<option value="PCB">PCB</option>
-<option value="Plastic">Plastic</option>
-<option value="Processor">Processor</option>
-<option value="RAM">RAM</option>
-<option value="Rubber">Rubber</option>
-<option value="SMPS">SMPS</option>
-<option value="Transformer">Transformer</option>
-<option value="Wood">Wood</option>
-<option value="Thermocol">Thermocol</option>
-<option value="Antique">Antique</option>
-<option value="Mix Ewaste">Mix Ewaste</option>
-<option value="Other Home Appliance">Other Home Appliance</option>
-<option value="Mylar">Mylar</option>
-<option value="Speaker">Speaker</option>
-<option value="Transistor">Transistor</option>
-<option value="CD">CD</option>
-<option value="Cassette">Cassette</option>
-<option value="Heatsink">Heatsink</option>
-<option value="Electrical Scrap">Electrical Scrap</option>
-<option value="MCB">MCB</option>
-<option value="Calculator">Calculator</option>
-<option value="Spikeguard">Spikeguard</option>
-<option value="Thinclient">Thinclient</option>
-<option value="Laptop Keyboard">Laptop Keyboard</option>
-<option value="Webcam">Webcam</option>
-<option value="DVD Player">DVD Player</option>
-<option value="Ipod">Ipod</option>
-<option value="Water Purifier">Water Purifier</option>
-<option value="Networking Device">Networking Device</option>
-<option value="Geyser">Geyser</option>
-<option value="Weighing Scale">Weighing Scale</option>
-<option value="Beauty Products">Beauty Products</option>
-<option value="Watch">Watch</option>
-<option value="Biometric Device">Biometric Device</option>
-<option value="Switch">Switch</option>
-<option value="Paper Shredder">Paper Shredder</option>
-<option value="Mosquito Racket">Mosquito Racket</option>
-<option value="Docking Station">Docking Station</option>
-<option value="Fire Alarm">Fire Alarm</option>
-<option value="Fire Extinguisher">Fire Extinguisher</option>
-<option value="Cash Machine">Cash Machine</option>
-<option value="Walkie Talkie">Walkie Talkie</option>
-<option value="Fiber Optic Cable">Fiber Optic Cable</option>
-<option value="Screw">Screw</option>
-<option value="Coffee Machine">Coffee Machine</option>
-<option value="Copper Cable">Copper Cable</option>
-<option value="Aluminium Cable">Aluminium Cable</option>
-<option value="Electric Vehicles">Electric Vehicles</option>
+                    <option value="CPU">CPU</option>
+                    <option value="Monitor">Monitor</option>
+                    <option value="Keyboard">Keyboard</option>
+                    <option value="Mouse">Mouse</option>
+                    <option value="Power Cable">Power Cable</option>
+                    <option value="VGA Cable">VGA Cable</option>
+                    <option value="Cable">Cable</option>
+                    <option value="Networking Cable">Networking Cable</option>
+                    <option value="Laptop">Laptop</option>
+                    <option value="Laptop Adaptor">Laptop Adaptor</option>
+                    <option value="Laptop Battery">Laptop Battery</option>
+                    <option value="Notebook Computer">Notebook Computer</option>
+                    <option value="Notepad Computer">Notepad Computer</option>
+                    <option value="Printer">Printer</option>
+                    <option value="Cartridge">Cartridge</option>
+                    <option value="Photocopy Machine">Photocopy Machine</option>
+                    <option value="Typewriter">Typewriter</option>
+                    <option value="POS">POS</option>
+                    <option value="Fax">Fax</option>
+                    <option value="Telex">Telex</option>
+                    <option value="Telephone">Telephone</option>
+                    <option value="Pay Telephone">Pay Telephone</option>
+                    <option value="Cordless Telephone">Cordless Telephone</option>
+                    <option value="Mobile">Mobile</option>
+                    <option value="Answering System">Answering System</option>
+                    <option value="TV">TV</option>
+                    <option value="Refrigerator">Refrigerator</option>
+                    <option value="Washing Machine">Washing Machine</option>
+                    <option value="AC">AC</option>
+                    <option value="Fluorescent Lamps">Fluorescent Lamps</option>
+                    <option value="Bluetooth Device">Bluetooth Device</option>
+                    <option value="BTS">BTS</option>
+                    <option value="Tab">Tab</option>
+                    <option value="Phablet">Phablet</option>
+                    <option value="Scanner">Scanner</option>
+                    <option value="Router">Router</option>
+                    <option value="GPS">GPS</option>
+                    <option value="UPS">UPS</option>
+                    <option value="Inverter">Inverter</option>
+                    <option value="Modem">Modem</option>
+                    <option value="Storage Device">Storage Device</option>
+                    <option value="Hard Disk">Hard Disk</option>
+                    <option value="Display Panel">Display Panel</option>
+                    <option value="Radio">Radio</option>
+                    <option value="Set Top Box">Set Top Box</option>
+                    <option value="Camera">Camera</option>
+                    <option value="Video Recorder">Video Recorder</option>
+                    <option value="Hi-fi Recorder">Hi-fi Recorder</option>
+                    <option value="Amplifier">Amplifier</option>
+                    <option value="CCTV">CCTV</option>
+                    <option value="DVR">DVR</option>
+                    <option value="Projector">Projector</option>
+                    <option value="Music System">Music System</option>
+                    <option value="Headphone">Headphone</option>
+                    <option value="Video Conference Device">Video Conference Device</option>
+                    <option value="Solar Panel">Solar Panel</option>
+                    <option value="Luminaires">Luminaires</option>
+                    <option value="Hallogen Lamps">Hallogen Lamps</option>
+                    <option value="Sodium Lamps">Sodium Lamps</option>
+                    <option value="Lights">Lights</option>
+                    <option value="Digital Camera">Digital Camera</option>
+                    <option value="Large Cooling Appliance">Large Cooling Appliance</option>
+                    <option value="Freezer">Freezer</option>
+                    <option value="Food Storage Refrigerator">Food Storage Refrigerator</option>
+                    <option value="Clothes Dryer">Clothes Dryer</option>
+                    <option value="Dishwasher">Dishwasher</option>
+                    <option value="Electric Cooker">Electric Cooker</option>
+                    <option value="Electric Stove">Electric Stove</option>
+                    <option value="Electric Hot plates">Electric Hot plates</option>
+                    <option value="Oven">Oven</option>
+                    <option value="Food Processors">Food Processors</option>
+                    <option value="Electric Heater">Electric Heater</option>
+                    <option value="Radiator">Radiator</option>
+                    <option value="Other Large Heaters">Other Large Heaters</option>
+                    <option value="Fans">Fans</option>
+                    <option value="Chimney">Chimney</option>
+                    <option value="Vaccuum Cleaner">Vaccuum Cleaner</option>
+                    <option value="Carpet Sweeper">Carpet Sweeper</option>
+                    <option value="Other Cleaning Appliance">Other Cleaning Appliance</option>
+                    <option value="Textile Machines">Textile Machines</option>
+                    <option value="Iron">Iron</option>
+                    <option value="Grinders">Grinders</option>
+                    <option value="Smoke Detector">Smoke Detector</option>
+                    <option value="Heating Regulator">Heating Regulator</option>
+                    <option value="Thermostat">Thermostat</option>
+                    <option value="Hot drinks dispenser">Hot drinks dispenser</option>
+                    <option value="Cold drinks dispenser">Cold drinks dispenser</option>
+                    <option value="Vending Machine">Vending Machine</option>
+                    <option value="ATM">ATM</option>
+                    <option value="Other Vending Machine">Other Vending Machine</option>
+                    <option value="Air Purifier">Air Purifier</option>
+                    <option value="Hair Dryer">Hair Dryer</option>
+                    <option value="Electric Shaver">Electric Shaver</option>
+                    <option value="Electric Kettle">Electric Kettle</option>
+                    <option value="Display Board">Display Board</option>
+                    <option value="Drills">Drills</option>
+                    <option value="Saw">Saw</option>
+                    <option value="Sewing Machine">Sewing Machine</option>
+                    <option value="Carpentry Tools">Carpentry Tools</option>
+                    <option value="Other Carpentry Tools">Other Carpentry Tools</option>
+                    <option value="Fabrication Tools">Fabrication Tools</option>
+                    <option value="Spraying Machines">Spraying Machines</option>
+                    <option value="Gardening Tools">Gardening Tools</option>
+                    <option value="Electric Toys">Electric Toys</option>
+                    <option value="Handheld Video Games">Handheld Video Games</option>
+                    <option value="Video Games">Video Games</option>
+                    <option value="Other Video Games">Other Video Games</option>
+                    <option value="Sports Equipments">Sports Equipments</option>
+                    <option value="Slot Machines">Slot Machines</option>
+                    <option value="Radiotherapy Devices">Radiotherapy Devices</option>
+                    <option value="Cardiology Devices">Cardiology Devices</option>
+                    <option value="Pulmonary Cardiology Ventilators">Pulmonary Cardiology Ventilators</option>
+                    <option value="Pulmonary Anaesthesia Ventilators">Pulmonary Anaesthesia Ventilators</option>
+                    <option value="Nuclear Medicine Equipment">Nuclear Medicine Equipment</option>
+                    <option value="In Vitro Diagnosis Equipment">In Vitro Diagnosis Equipment</option>
+                    <option value="Analysers">Analysers</option>
+                    <option value="MRI Machine">MRI Machine</option>
+                    <option value="Fertilization Test Equipment">Fertilization Test Equipment</option>
+                    <option value="Other Medical Equipment">Other Medical Equipment</option>
+                    <option value="Gas analyser">Gas analyser</option>
+                    <option value="Lab Equipment">Lab Equipment</option>
+                    <option value="Aluminium">Aluminium</option>
+                    <option value="Remote">Remote</option>
+                    <option value="Power Bank">Power Bank</option>
+                    <option value="UPS Battery">UPS Battery</option>
+                    <option value="Li-ion Battery">Li-ion Battery</option>
+                    <option value="Cell Battery">Cell Battery</option>
+                    <option value="Brass">Brass</option>
+                    <option value="Capacitor">Capacitor</option>
+                    <option value="Casting">Casting</option>
+                    <option value="Ceramic">Ceramic</option>
+                    <option value="Charger">Charger</option>
+                    <option value="Choke">Choke</option>
+                    <option value="Compressor">Compressor</option>
+                    <option value="Condenser">Condenser</option>
+                    <option value="Copper">Copper</option>
+                    <option value="CPU Cabinet">CPU Cabinet</option>
+                    <option value="DVD Drive">DVD Drive</option>
+                    <option value="Glass">Glass</option>
+                    <option value="Magnet">Magnet</option>
+                    <option value="Metal Steel">Metal Steel</option>
+                    <option value="Stainless Steel">Stainless Steel</option>
+                    <option value="Motor">Motor</option>
+                    <option value="Oil">Oil</option>
+                    <option value="Paper">Paper</option>
+                    <option value="PCB">PCB</option>
+                    <option value="Plastic">Plastic</option>
+                    <option value="Processor">Processor</option>
+                    <option value="RAM">RAM</option>
+                    <option value="Rubber">Rubber</option>
+                    <option value="SMPS">SMPS</option>
+                    <option value="Transformer">Transformer</option>
+                    <option value="Wood">Wood</option>
+                    <option value="Thermocol">Thermocol</option>
+                    <option value="Antique">Antique</option>
+                    <option value="Mix Ewaste">Mix Ewaste</option>
+                    <option value="Other Home Appliance">Other Home Appliance</option>
+                    <option value="Mylar">Mylar</option>
+                    <option value="Speaker">Speaker</option>
+                    <option value="Transistor">Transistor</option>
+                    <option value="CD">CD</option>
+                    <option value="Cassette">Cassette</option>
+                    <option value="Heatsink">Heatsink</option>
+                    <option value="Electrical Scrap">Electrical Scrap</option>
+                    <option value="MCB">MCB</option>
+                    <option value="Calculator">Calculator</option>
+                    <option value="Spikeguard">Spikeguard</option>
+                    <option value="Thinclient">Thinclient</option>
+                    <option value="Laptop Keyboard">Laptop Keyboard</option>
+                    <option value="Webcam">Webcam</option>
+                    <option value="DVD Player">DVD Player</option>
+                    <option value="Ipod">Ipod</option>
+                    <option value="Water Purifier">Water Purifier</option>
+                    <option value="Networking Device">Networking Device</option>
+                    <option value="Geyser">Geyser</option>
+                    <option value="Weighing Scale">Weighing Scale</option>
+                    <option value="Beauty Products">Beauty Products</option>
+                    <option value="Watch">Watch</option>
+                    <option value="Biometric Device">Biometric Device</option>
+                    <option value="Switch">Switch</option>
+                    <option value="Paper Shredder">Paper Shredder</option>
+                    <option value="Mosquito Racket">Mosquito Racket</option>
+                    <option value="Docking Station">Docking Station</option>
+                    <option value="Fire Alarm">Fire Alarm</option>
+                    <option value="Fire Extinguisher">Fire Extinguisher</option>
+                    <option value="Cash Machine">Cash Machine</option>
+                    <option value="Walkie Talkie">Walkie Talkie</option>
+                    <option value="Fiber Optic Cable">Fiber Optic Cable</option>
+                    <option value="Screw">Screw</option>
+                    <option value="Coffee Machine">Coffee Machine</option>
+                    <option value="Copper Cable">Copper Cable</option>
+                    <option value="Aluminium Cable">Aluminium Cable</option>
+                    <option value="Electric Vehicles">Electric Vehicles</option>
                 </select>
                 <input type="number" class="product-quantity" placeholder="Quantity" min="1">
                 <button type="button" onclick="removeProduct(this)">Remove</button>
             `;
-            document.getElementById('requestedProductsContainer').appendChild(productGroup);
-            $(".chosen-select").chosen();
-        }
+        document
+          .getElementById("requestedProductsContainer")
+          .appendChild(productGroup);
+        $(".chosen-select").chosen();
+      }
 
-        function removeProduct(button) {
-            var productGroup = button.parentNode;
-            productGroup.parentNode.removeChild(productGroup);
-        }
+      function removeProduct(button) {
+        var productGroup = button.parentNode;
+        productGroup.parentNode.removeChild(productGroup);
+      }
 
-        var products = [];
-        function getRequestedProducts() {
-            // Function to get the requested products dynamically
-            var productSelects = document.getElementsByClassName('product-select');
-            var productQuantities = document.getElementsByClassName('product-quantity');
-            for (var i = 0; i < productSelects.length; i++) {
-                var product = productSelects[i].value;
-                var quantity = productQuantities[i].value;
-                if (product && quantity) {
-                    products.push({ product: product, quantity: quantity });
-                }
+      var products = [];
+      function getRequestedProducts() {
+        // Function to get the requested products dynamically
+        var productSelects = document.getElementsByClassName("product-select");
+        var productQuantities =
+          document.getElementsByClassName("product-quantity");
+        for (var i = 0; i < productSelects.length; i++) {
+          var product = productSelects[i].value;
+          var quantity = productQuantities[i].value;
+          if (product && quantity) {
+            products.push({ product: product, quantity: quantity });
+          }
+        }
+        return products;
+      }
+
+      async function uploadFilesToCloudinary(file) {
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("upload_preset", "ml_default"); // Replace with your Cloudinary upload preset
+        // formData.append('resource_type', 'raw');  // Explicitly set resource type to 'raw'
+
+        try {
+          const response = await fetch(
+            "https://api.cloudinary.com/v1_1/dl8c4ux5w/upload",
+            {
+              method: "POST",
+              body: formData,
             }
-            return products;
+          );
+          const data = await response.json();
+          console.log("Uploaded URL: " + data.secure_url);
+          return data.secure_url; // Return the uploaded file's URL
+        } catch (error) {
+          console.error("Error uploading file to Cloudinary:", error);
+          alert("Failed to upload file to Cloudinary.");
         }
+      }
 
-        async function uploadFilesToCloudinary(file) {
-            const formData = new FormData();
-            formData.append('file', file);
-            formData.append('upload_preset', 'ml_default'); // Replace with your Cloudinary upload preset
-            // formData.append('resource_type', 'raw');  // Explicitly set resource type to 'raw'
+      async function addOrder() {
+        const submitButton = document.getElementById("submitOrderBtn");
+        const spinner = document.getElementById("spinner");
+        const buttonText = document.getElementById("buttonText");
 
-            try {
-                const response = await fetch('https://api.cloudinary.com/v1_1/dl8c4ux5w/upload', {
-                    method: 'POST',
-                    body: formData
-                });
-                const data = await response.json();
-                console.log("Uploaded URL: "+ data.secure_url);
-                return data.secure_url;  // Return the uploaded file's URL
-            } catch (error) {
-                console.error('Error uploading file to Cloudinary:', error);
-                alert('Failed to upload file to Cloudinary.');
+        spinner.style.display = "inline-block"; // Show spinner
+        buttonText.innerText = "Submitting your order..."; // Update button text
+        submitButton.disabled = true; // Disable the button to prevent multiple clicks
+
+        try {
+          const productFilesInput = document.getElementById("productFiles");
+          const uploadPictureInput = document.getElementById("uploadPicture");
+          const certificateInput = document.getElementById("newCertificate");
+
+          // Collect Product Files URLs
+          const productFilesURLs = [];
+          for (const file of productFilesInput.files) {
+            const url = await uploadFilesToCloudinary(file);
+            if (url) productFilesURLs.push(url);
+          }
+
+          // Collect Picture URLs
+          const pictureURLs = [];
+          for (const file of uploadPictureInput.files) {
+            const url = await uploadFilesToCloudinary(file);
+            if (url) pictureURLs.push(url);
+          }
+
+          // Collect Certificate URL (assuming only one certificate file)
+          let certificateURL = "";
+          if (certificateInput.files.length > 0) {
+            certificateURL = await uploadFilesToCloudinary(
+              certificateInput.files[0]
+            );
+          }
+
+          var products = getRequestedProducts();
+          var formdata = {
+            username: document.getElementById("newUsername").value,
+            name: document.getElementById("newName").value,
+            businessUnit: document.getElementById("newBusinessUnit").value,
+            gender: document.getElementById("newGender").value,
+            age: document.getElementById("newAge").value,
+            phone: document.getElementById("newPhone").value,
+            email: document.getElementById("newEmail").value,
+            address: document.getElementById("newAddress").value,
+            reference: document.getElementById("reference").value,
+            zone: document.getElementById("zone").value,
+            requestedProducts: products,
+            poaMode: document.getElementById("poaMode").value,
+            productFiles: productFilesURLs,
+            picture: pictureURLs,
+            certificate: certificateURL,
+            requestStatus: document.getElementById("requestStatus").value,
+            urgencyLevel: document.getElementById("urgencyLevel").value,
+          };
+
+          const response = await fetch("http://localhost:5000/addOrder", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(formdata),
+          });
+
+          const data = await response.json();
+          if (response.ok) {
+            alert("Order submitted successfully!");
+            console.log("Order data:", data);
+            document.getElementById("newOrderForm").reset();
+            $(".chosen-select").trigger("chosen:updated"); // Re-initialize chosen select elements if needed
+            loadOrders();
+          } else {
+            alert("Failed to submit order: " + data.message);
+          }
+        } catch (error) {
+          console.error("Error submitting order:", error);
+          alert("An error occurred while submitting the order.");
+        } finally {
+          // Hide loading spinner and reset button text
+          spinner.style.display = "none"; // Hide spinner
+          buttonText.innerText = "Submit Order"; // Reset button text
+          submitButton.disabled = false; // Enable the button again
+        }
+      }
+
+      async function loadOrders() {
+        try {
+          const response = await fetch("http://localhost:5000/getAllOrders");
+          const orders = await response.json();
+
+          if (response.ok) {
+            displayOrders(orders); // Display the orders in the table
+          } else {
+            console.error("Failed to fetch orders:", orders.message);
+          }
+        } catch (error) {
+          console.error("Error fetching orders:", error);
+        }
+      }
+
+      async function deleteOrder(orderId) {
+        try {
+          const response = await fetch(
+            `http://localhost:5000/deleteOrder/${orderId}`,
+            {
+              method: "DELETE",
             }
+          );
+
+          const responseData = await response.json();
+          if (response.ok) {
+            alert("Order deleted successfully!");
+            loadOrders(); // Reload orders to refresh the table
+          } else {
+            alert("Failed to delete order: " + responseData.message);
+          }
+        } catch (error) {
+          console.error("Error deleting order:", error);
+          alert("An error occurred while deleting the order.");
+        }
+      }
+
+        function formatDate(dateString) {
+            if (!dateString) return "";  // Handle empty or null dates
+            const date = new Date(dateString);
+            if (isNaN(date)) return "";  // Invalid date check
+
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0');  // Months are zero-based
+            const year = date.getFullYear();
+
+            return `${day}/${month}/${year}`;
         }
 
-        async function addOrder() {
-            const submitButton = document.getElementById('submitOrderBtn');
-            const spinner = document.getElementById('spinner');
-            const buttonText = document.getElementById('buttonText');
+      function displayOrders(orders) {
+        const ordersTable = document
+          .getElementById("ordersTable")
+          .getElementsByTagName("tbody")[0];
+        ordersTable.innerHTML = ""; // Clear existing table rows
 
-            spinner.style.display = 'inline-block';  // Show spinner
-            buttonText.innerText = 'Submitting your order...';  // Update button text
-            submitButton.disabled = true;  // Disable the button to prevent multiple clicks
+        orders.forEach((order) => {
+          const newRow = ordersTable.insertRow();
+          newRow.insertCell(0).innerText = order.username;
+          newRow.insertCell(1).innerText = order.name;
+          newRow.insertCell(2).innerText = order.businessUnit;
+          newRow.insertCell(3).innerText = order.gender;
+          newRow.insertCell(4).innerText = order.age;
+          newRow.insertCell(5).innerText = order.phone;
+          newRow.insertCell(6).innerText = order.email;
+          newRow.insertCell(7).innerText = order.address;
+          newRow.insertCell(8).innerText = order.zone;
 
-            try {
-                const productFilesInput = document.getElementById('productFiles');
-                const uploadPictureInput = document.getElementById('uploadPicture');
-                const certificateInput = document.getElementById('newCertificate');
+          const requestedProductsCell = newRow.insertCell(9);
+          if (
+            Array.isArray(order.requestedProducts) &&
+            order.requestedProducts.length > 0
+          ) {
+            order.requestedProducts.forEach((prod, index) => {
+              const info = document.createElement("li");
+              info.innerText = `${prod.product}(${prod.quantity})`
+              info.style.listStyleType = "none";
+              requestedProductsCell.appendChild(info);
+            })
+          }
+          else{
+            requestedProductsCell.innerText = "No Products";
+          }
 
-                // Collect Product Files URLs
-                const productFilesURLs = [];
-                for (const file of productFilesInput.files) {
-                    const url = await uploadFilesToCloudinary(file);
-                    if (url) productFilesURLs.push(url);
-                }
+          newRow.insertCell(10).innerText = order.poaMode;
 
-                // Collect Picture URLs
-                const pictureURLs = [];
-                for (const file of uploadPictureInput.files) {
-                    const url = await uploadFilesToCloudinary(file);
-                    if (url) pictureURLs.push(url);
-                }
-
-                // Collect Certificate URL (assuming only one certificate file)
-                let certificateURL = '';
-                if (certificateInput.files.length > 0) {
-                    certificateURL = await uploadFilesToCloudinary(certificateInput.files[0]);
-                } 
-
-                var products = getRequestedProducts();
-                var formdata = {
-                    username: document.getElementById('newUsername').value,
-                    name: document.getElementById('newName').value,
-                    businessUnit: document.getElementById('newBusinessUnit').value,
-                    gender: document.getElementById('newGender').value,
-                    age: document.getElementById('newAge').value,
-                    phone: document.getElementById('newPhone').value,
-                    email: document.getElementById('newEmail').value,
-                    address: document.getElementById('newAddress').value,  
-                    reference: document.getElementById('reference').value,  
-                    zone: document.getElementById('zone').value,
-                    requestedProducts: products,  
-                    poaMode: document.getElementById('poaMode').value,
-                    productFiles: productFilesURLs, 
-                    picture: pictureURLs,  
-                    certificate: certificateURL,  
-                    requestStatus: document.getElementById('requestStatus').value,
-                    urgencyLevel: document.getElementById('urgencyLevel').value,
-                }
-
-                const response = await fetch('http://localhost:5000/addProduct', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(formdata)
-                });
-
-                const data = await response.json();
-                if (response.ok) {
-                    alert('Order submitted successfully!');
-                    console.log('Order data:', data);
-                    document.getElementById('newOrderForm').reset();
-                    $(".chosen-select").trigger("chosen:updated");  // Re-initialize chosen select elements if needed
-                    loadOrders();
-                } 
-                else {
-                    alert('Failed to submit order: ' + data.message);
-                }
-            } catch (error) {
-                console.error('Error submitting order:', error);
-                alert('An error occurred while submitting the order.');
-            } finally {
-                // Hide loading spinner and reset button text
-                spinner.style.display = 'none';  // Hide spinner
-                buttonText.innerText = 'Submit Order';  // Reset button text
-                submitButton.disabled = false;  // Enable the button again
-            }
-        }
-
-        async function loadOrders() {
-            try {
-                const response = await fetch('http://localhost:5000/getAllProducts');
-                const orders = await response.json();
-
-                if (response.ok) {
-                    displayOrders(orders);  // Display the orders in the table
-                } else {
-                    console.error('Failed to fetch orders:', orders.message);
-                }
-            } catch (error) {
-                console.error('Error fetching orders:', error);
-            }
-        }
-
-        async function deleteOrder(orderId) {
-            try {
-                const response = await fetch(`http://localhost:5000/deleteProduct/${orderId}`, {
-                    method: 'DELETE',
-                });
-
-                const responseData = await response.json();
-                if (response.ok) {
-                    alert('Order deleted successfully!');
-                    loadOrders();  // Reload orders to refresh the table
-                } else {
-                    alert('Failed to delete order: ' + responseData.message);
-                }
-            } catch (error) {
-                console.error('Error deleting order:', error);
-                alert('An error occurred while deleting the order.');
-            }
-        }
-
-        function displayOrders(orders) {
-            const ordersTable = document.getElementById('ordersTable').getElementsByTagName('tbody')[0];
-            ordersTable.innerHTML = '';  // Clear existing table rows
-
-            orders.forEach(order => {
-                const newRow = ordersTable.insertRow();
-                newRow.insertCell(0).innerText = order.username;
-                newRow.insertCell(1).innerText = order.name;
-                newRow.insertCell(2).innerText = order.businessUnit;
-                newRow.insertCell(3).innerText = order.gender;
-                newRow.insertCell(4).innerText = order.age;
-                newRow.insertCell(5).innerText = order.phone;
-                newRow.insertCell(6).innerText = order.email;
-                newRow.insertCell(7).innerText = order.address;
-                newRow.insertCell(8).innerText = order.zone;
-                newRow.insertCell(9).innerText = order.requestedProducts;
-                newRow.insertCell(10).innerText = order.poaMode;
-                
-                const linkColor = order.urgencyLevel === "Yes" ? "white" : "#007bff";
-
-                const productFilesCell = newRow.insertCell(11);
-                if (Array.isArray(order.productFiles) && order.productFiles.length > 0) {
-                    order.productFiles.forEach((file, index) => {
-                        const link = document.createElement('a');
-                        link.href = file;
-                        link.target = '_blank';  // Open in new tab
-                        link.innerText = `File ${index + 1}`;  // Label as "File 1", "File 2", etc.
-                        link.style.color = linkColor;  // Set link color based on urgency
-                        productFilesCell.appendChild(link);
-                        productFilesCell.appendChild(document.createElement('br'));  // Line break for each file
-                    });
-                } else {
-                    productFilesCell.innerText = 'No Files';
-                }
-
-                const pictureCell = newRow.insertCell(12);
-                if (Array.isArray(order.picture) && order.picture.length > 0) {
-                    order.picture.forEach((pic, index) => {
-                        const link = document.createElement('a');
-                        link.href = pic;
-                        link.target = '_blank';  // Open in new tab
-                        link.innerText = `Image ${index + 1}`;  // Label as "Picture 1", "Picture 2", etc.
-                        link.style.color = linkColor;  // Set link color based on urgency
-                        pictureCell.appendChild(link);
-                        pictureCell.appendChild(document.createElement('br'));  // Line break for each picture
-                    });
-                } else {
-                    pictureCell.innerText = 'No Pictures';
-                }
-
-                const certificateCell = newRow.insertCell(13);
-                if (order.certificate) {
-                    const link = document.createElement('a');
-                    link.href = order.certificate;
-                    link.target = '_blank';  // Open in new tab
-                    link.innerText = 'Certificate';  // Label as "Certificate"
-                    link.style.color = linkColor;  // Set link color based on urgency
-                    certificateCell.appendChild(link);
-                } else {
-                    certificateCell.innerText = 'No Certificate';
-                }
-                newRow.insertCell(14).innerText = order.requestStatus;
-                newRow.insertCell(15).innerText = order.urgencyLevel;
-                newRow.insertCell(16).innerHTML = `<span class="${order.collectionStatus === 'Collected' ? 'collected' : 'not-collected'}">${order.collectionStatus}</span>`;
-                newRow.insertCell(17).innerText = order.allocatedPickupDate || "";
-                newRow.insertCell(18).innerText = order.actualPickupDate || "";
-                newRow.insertCell(19).innerText = order.receivedProducts | "";
-
-                const deleteButton = document.createElement('button');
-                deleteButton.innerText = 'Delete';
-                deleteButton.className = 'delete-button';
-                deleteButton.onclick = function() {
-                    deleteOrder(order._id);  // Call deleteOrder function to delete the order
-                };
-                newRow.insertCell(20).appendChild(deleteButton);
-
-                if (order.urgencyLevel === "Yes" && order.collectionStatus !== 'Collected') {
-                    newRow.classList.add('urgent');
-                }
-
-                if (order.collectionStatus === 'Collected') {
-                    newRow.classList.remove('urgent');
-                }
+          const linkColor = order.urgencyLevel === "Yes" ? "white" : "#007bff";
+          const productFilesCell = newRow.insertCell(11);
+          if (
+            Array.isArray(order.productFiles) &&
+            order.productFiles.length > 0
+          ) {
+            order.productFiles.forEach((file, index) => {
+              const link = document.createElement("a");
+              link.href = file;
+              link.target = "_blank"; // Open in new tab
+              link.innerText = `File ${index + 1}`; // Label as "File 1", "File 2", etc.
+              link.style.color = linkColor; // Set link color based on urgency
+              productFilesCell.appendChild(link);
+              productFilesCell.appendChild(document.createElement("br")); // Line break for each file
             });
-        }
-        
+          } else {
+            productFilesCell.innerText = "No Files";
+          }
+
+          const pictureCell = newRow.insertCell(12);
+          if (Array.isArray(order.picture) && order.picture.length > 0) {
+            order.picture.forEach((pic, index) => {
+              const link = document.createElement("a");
+              link.href = pic;
+              link.target = "_blank"; // Open in new tab
+              link.innerText = `Image ${index + 1}`; // Label as "Picture 1", "Picture 2", etc.
+              link.style.color = linkColor; // Set link color based on urgency
+              pictureCell.appendChild(link);
+              pictureCell.appendChild(document.createElement("br")); // Line break for each picture
+            });
+          } else {
+            pictureCell.innerText = "No Pictures";
+          }
+
+          const certificateCell = newRow.insertCell(13);
+          if (order.certificate) {
+            const link = document.createElement("a");
+            link.href = order.certificate;
+            link.target = "_blank"; // Open in new tab
+            link.innerText = "Certificate"; // Label as "Certificate"
+            link.style.color = linkColor; // Set link color based on urgency
+            certificateCell.appendChild(link);
+          } else {
+            certificateCell.innerText = "No Certificate";
+          }
+          newRow.insertCell(14).innerText = order.requestStatus;
+          newRow.insertCell(15).innerText = order.urgencyLevel;
+          newRow.insertCell(16).innerHTML = `<span class="${
+            order.collectionStatus === "Collected"
+              ? "collected"
+              : "not-collected"
+          }">${order.collectionStatus}</span>`;
+          newRow.insertCell(17).innerText = formatDate(order.allocatedPickupDate);
+          newRow.insertCell(18).innerText = formatDate(order.actualPickupDate);
+          newRow.insertCell(19).innerText = order.receivedProducts || "";
+
+          const deleteButton = document.createElement("button");
+          deleteButton.innerText = "Delete";
+          deleteButton.className = "delete-button";
+          deleteButton.onclick = function () {
+            deleteOrder(order._id); // Call deleteOrder function to delete the order
+          };
+          newRow.insertCell(20).appendChild(deleteButton);
+
+          if (
+            order.urgencyLevel === "Yes" &&
+            order.collectionStatus !== "Collected"
+          ) {
+            newRow.classList.add("urgent");
+          }
+
+          if (order.collectionStatus === "Collected") {
+            newRow.classList.remove("urgent");
+          }
+
+          for (let cell of newRow.cells) {
+            cell.classList.add("table-cell");
+          }
+        });
+      }
     </script>
-</body>
+  </body>
 </html>

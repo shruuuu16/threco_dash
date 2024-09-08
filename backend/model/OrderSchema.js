@@ -2,7 +2,7 @@ const mongoose = require('mongoose')
 
 require('../db/connnection')
 
-const productSchema = new mongoose.Schema({
+const orderSchema = new mongoose.Schema({
     username: { type: String },
     name: { type: String },
     businessUnit: { type: String},  // Business Unit
@@ -33,8 +33,8 @@ const productSchema = new mongoose.Schema({
     receivedProductsDetails: { type: String }  // Details of received products, adjust type if necessary
 }, { timestamps: true }); 
 
-productSchema.index({title: 'text' , towards: 'text'})  // for full text-search
+orderSchema.index({title: 'text' , towards: 'text'})  // for full text-search
 
-const Product = mongoose.model('PRODUCT' , productSchema)
+const Order = mongoose.model('PRODUCT' , orderSchema)
 
-module.exports = Product
+module.exports = Order

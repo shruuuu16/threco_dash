@@ -594,8 +594,17 @@
 
     <script>
       document.addEventListener("DOMContentLoaded", function () {
+        if (
+          !localStorage.getItem("loggedInUserRole") &&
+          localStorage.getItem("loggedInUserRole") != "admin"
+        ) {
+          alert("Please log in first.");
+          window.location.href = "admin.login.html";
+          return;
+        }
         loadOrders();
         $(".chosen-select").chosen();
+
       });
 
       function downloadCSV() {

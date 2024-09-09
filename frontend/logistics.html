@@ -15,6 +15,13 @@
         align-items: center;
       }
 
+      .header{
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-direction: row;
+      }
+
       .container {
         background-color: white;
         padding: 20px;
@@ -86,11 +93,29 @@
       .urgent td {
         color: red; /* Red text for urgent orders */
       }
+
+      .logout-button{
+        background-color: #dc3545;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+        border-radius: 4px;
+      }
+      
+      .logout-button:hover {
+        background-color: #c82333;
+      }
+      
     </style>
   </head>
   <body>
     <div class="container">
-      <h1>Logistics Dashboard</h1>
+      <div class="header">
+        <h1>Logistics Dashboard</h1>
+        <button class="logout-button" onClick="logout()">Logout</button>
+      </div>
       <table id="ordersTable">
         <thead>
           <tr>
@@ -127,9 +152,7 @@
           return;
         }
 
-        const ordersTable = document
-          .getElementById("ordersTable")
-          .getElementsByTagName("tbody")[0];
+        const ordersTable = document.getElementById("ordersTable").getElementsByTagName("tbody")[0];
         const orderChanges = {};
 
         // Load orders from the backend
@@ -377,6 +400,26 @@
 
         loadOrders(); // Initial load
       });
+
+      function logout() {
+            fetch("http://localhost:5000/logout", {
+                method: "POST",
+                credentials: "include",
+            })
+            .then((response) => {
+                if (response.ok) {
+                localStorage.clear();
+                alert("Logged out successfully!");
+                window.location.href = "index.html";
+                } else {
+                alert("Failed to log out. Please try again.");
+                }
+            })
+            .catch((error) => {
+                console.error("Error logging out:", error);
+                alert("An error occurred while logging out.");
+            });
+        }
     </script>
   </body>
 </html>

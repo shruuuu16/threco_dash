@@ -95,10 +95,16 @@
                 }
             })
             .then(data => {
-                localStorage.setItem('loggedInUserRole', data.loggedUser.role);
-                alert('Admin login successful!');
-                console.log(data);
-                window.location.href = 'admin.html';
+                if(data.loggedUser.role == "admin"){
+                    localStorage.setItem('loggedInUserRole', data.loggedUser.role);
+                    alert('Admin login successful!');
+                    console.log(data);
+                    window.location.href = 'admin.html';
+                }
+                else{
+                    alert('Plese login using Admin account!');
+                }
+                
             })
             .catch(error => {
                 alert('An error occurred while trying to log in. Please try again later.');

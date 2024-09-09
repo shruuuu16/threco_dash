@@ -35,6 +35,6 @@ const orderSchema = new mongoose.Schema({
 
 orderSchema.index({title: 'text' , towards: 'text'})  // for full text-search
 
-const Order = mongoose.model('PRODUCT' , orderSchema)
+const Order = mongoose.model('orders' , orderSchema)
 
 module.exports = Order

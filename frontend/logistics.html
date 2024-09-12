@@ -86,11 +86,31 @@
       .urgent td {
         color: red; /* Red text for urgent orders */
       }
+      .header {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        margin-bottom: 20px;
+      }
+
+      .logout-btn {
+        padding: 8px 16px;
+        background-color: #dc3545;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+
+      .logout-btn:hover {
+        background-color: #c82333;
+      }
     </style>
   </head>
   <body>
     <div class="container">
       <h1>Logistics Dashboard</h1>
+      <button class="logout-btn" onclick="logout()">Logout</button>
       <table id="ordersTable">
         <thead>
           <tr>
@@ -99,6 +119,7 @@
             <th>Phone Number</th>
             <th>Zone</th>
             <th>POA/Mode</th>
+            <th>Picture</th>
             <th>Allocated Pickup Date</th>
             <th>Actual Pickup Date</th>
             <th>Collection Status</th>
@@ -115,6 +136,11 @@
       </table>
     </div>
     <script>
+              function logout() {
+        localStorage.removeItem("loggedInUserRole");
+        window.location.href = "index.html";
+      }
+
       document.addEventListener("DOMContentLoaded", function () {
         console.log("DOM fully loaded and parsed.");
 
@@ -193,6 +219,7 @@
                 <td>${order.phone || ""}</td>
                 <td>${order.zone || ""}</td>
                 <td>${order.poaMode || ""}</td>
+                <td>${order.picture || ""}</td>
                 <td>
                     <input type="date" value="${
                       order.allocatedPickupDate || ""
@@ -376,6 +403,7 @@
         });
 
         loadOrders(); // Initial load
+        document.querySelector(".logout-btn").addEventListener("click", logout);
       });
     </script>
   </body>

@@ -576,7 +576,7 @@
             <th>POA/Mode</th>
             <th>Product Files</th>
             <th>Picture</th>
-            <th>Certificate</th>
+            <!-- <th>Certificate</th> -->
             <th>Request Status</th>
             <th>Urgency Level</th>
             <th>Collection Status</th>
@@ -1129,27 +1129,28 @@
             pictureCell.innerText = "No Pictures";
           }
 
-          const certificateCell = newRow.insertCell(13);
-          if (order.certificate) {
-            const link = document.createElement("a");
-            link.href = order.certificate;
-            link.target = "_blank"; // Open in new tab
-            link.innerText = "Certificate"; // Label as "Certificate"
-            link.style.color = linkColor; // Set link color based on urgency
-            certificateCell.appendChild(link);
-          } else {
-            certificateCell.innerText = "No Certificate";
-          }
-          newRow.insertCell(14).innerText = order.requestStatus;
-          newRow.insertCell(15).innerText = order.urgencyLevel;
-          newRow.insertCell(16).innerHTML = `<span class="${
+          // const certificateCell = newRow.insertCell(13);
+          // if (order.certificate) {
+          //   const link = document.createElement("a");
+          //   link.href = order.certificate;
+          //   link.target = "_blank"; // Open in new tab
+          //   link.innerText = "Certificate"; // Label as "Certificate"
+          //   link.style.color = linkColor; // Set link color based on urgency
+          //   certificateCell.appendChild(link);
+          // } else {
+          //   certificateCell.innerText = "No Certificate";
+          // }
+
+          newRow.insertCell(13).innerText = order.requestStatus;
+          newRow.insertCell(14).innerText = order.urgencyLevel;
+          newRow.insertCell(15).innerHTML = `<span class="${
             order.collectionStatus === "Collected"
               ? "collected"
               : "not-collected"
           }">${order.collectionStatus}</span>`;
-          newRow.insertCell(17).innerText = formatDate(order.allocatedPickupDate);
-          newRow.insertCell(18).innerText = formatDate(order.actualPickupDate);
-          newRow.insertCell(19).innerText = order.receivedProducts || "";
+          newRow.insertCell(16).innerText = formatDate(order.allocatedPickupDate);
+          newRow.insertCell(17).innerText = formatDate(order.actualPickupDate);
+          newRow.insertCell(18).innerText = order.receivedProducts || "";
 
           const deleteButton = document.createElement("button");
           deleteButton.innerText = "Delete";
@@ -1157,7 +1158,7 @@
           deleteButton.onclick = function () {
             deleteOrder(order._id); // Call deleteOrder function to delete the order
           };
-          newRow.insertCell(20).appendChild(deleteButton);
+          newRow.insertCell(19).appendChild(deleteButton);
 
           if (
             order.urgencyLevel === "Yes" &&
